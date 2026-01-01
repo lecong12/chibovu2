@@ -12,13 +12,13 @@
             z-index: -100; transform: translate(-50%, -50%);
             object-fit: cover; filter: brightness(0.65);
         }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; color: white; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', Arial, sans-serif; color: white; background: #000; }
 
-        /* 2. GIAO DIỆN ĐĂNG NHẬP (MÀU XANH NHẸ NHƯ PHIÊN BẢN TRƯỚC) */
+        /* 2. GIAO DIỆN ĐĂNG NHẬP (GIỮ NGUYÊN BẢN ĐẸP) */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(225, 245, 254, 0.4); 
-            z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(12px);
         }
         .login-box {
@@ -27,54 +27,60 @@
             text-align: center; width: 75%; max-width: 280px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
-        .login-box img { width: 70px; margin-bottom: 12px; }
         .login-box h2 { color: #0d47a1; font-size: 1.1rem; margin-bottom: 20px; text-transform: uppercase; font-weight: bold; }
         .login-box input {
             width: 90%; padding: 12px; margin: 6px 0; border-radius: 20px;
             border: 1px solid rgba(0,0,0,0.1); outline: none; text-align: center; 
             font-size: 0.95rem; box-sizing: border-box; background: white; color: #333;
         }
-        /* Nút đăng nhập màu xanh Navy */
         .btn-login-submit {
             background: #0d47a1; color: white; border: none; padding: 12px; margin-top: 15px;
             border-radius: 20px; font-weight: bold; cursor: pointer; width: 90%; text-transform: uppercase;
-            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
         }
 
-        /* 3. NÚT THOÁT NHỎ GỌN */
+        /* 3. CỐ ĐỊNH PHẦN ĐẦU TRANG (FIXED HEADER) */
+        .fixed-header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            z-index: 1000; padding: 20px 0 10px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2); /* Đổ bóng nhẹ phía sau tiêu đề */
+            backdrop-filter: blur(5px);
+        }
+        .fixed-header img { width: 80px; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)); }
+        .fixed-header h1 { font-size: 1.4rem; text-transform: uppercase; text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); margin: 5px 0; }
+        .fixed-header .subtitle { color: #ffc107; font-weight: bold; font-size: 0.9rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+
+        /* NÚT THOÁT CỐ ĐỊNH */
         .logout-btn {
-            position: fixed; top: 15px; right: 15px;
+            position: absolute; top: 15px; right: 15px;
             background: rgba(13, 71, 161, 0.7); color: white; padding: 4px 10px; 
-            border-radius: 10px; font-size: 0.65rem; cursor: pointer; z-index: 100; font-weight: bold;
+            border-radius: 10px; font-size: 0.65rem; cursor: pointer; font-weight: bold;
             text-transform: uppercase; border: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* 4. GIAO DIỆN CHÍNH & NÚT TRONG SUỐT THẤY CỜ */
+        /* 4. NỘI DUNG CHÍNH (CÓ PADDING TOP ĐỂ KHÔNG BỊ TIÊU ĐỀ ĐÈ LÊN) */
         #main-content {
             display: none; position: relative; z-index: 1;
-            flex-direction: column; align-items: center; padding: 65px 15px 40px;
-            min-height: 100vh; overflow-y: auto; box-sizing: border-box;
+            flex-direction: column; align-items: center; 
+            padding: 180px 15px 40px; /* Đẩy nội dung xuống dưới Header cố định */
+            min-height: 100vh; box-sizing: border-box;
+            overflow-y: auto;
         }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header img { width: 90px; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6)); }
-        h1 { font-size: 1.4rem; text-transform: uppercase; text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); margin: 5px 0; }
-        .subtitle { color: #ffc107; font-weight: bold; font-size: 0.95rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
         
         .menu-list { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; }
 
-        /* NÚT BẤM TRONG SUỐT (GLASSMORPHISM) */
+        /* NÚT BẤM TRONG SUỐT THẤY CỜ */
         .menu-btn {
-            background: rgba(255, 255, 255, 0.1); /* Trong suốt */
+            background: rgba(255, 255, 255, 0.1); 
             color: white; text-decoration: none; padding: 16px;
             border-radius: 50px; font-weight: bold; display: flex; align-items: center; justify-content: center;
-            border: 1.5px solid #ffc107; /* Viền vàng */
-            backdrop-filter: blur(4px); /* Mờ nhẹ nền */
+            border: 1.5px solid #ffc107;
+            backdrop-filter: blur(4px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             text-transform: uppercase; font-size: 0.85rem;
         }
         .menu-btn i { margin-right: 10px; font-size: 1.1rem; color: #ffc107; }
 
-        /* ACCORDION TRONG SUỐT */
         .accordion-item {
             background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; overflow: hidden;
@@ -97,19 +103,18 @@
 
     <div id="login-overlay">
         <div class="login-box">
-            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png">
+            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="70">
             <h2>Chi bộ Vụ 2</h2>
             <input type="text" id="username-input" placeholder="Tên đăng nhập">
             <input type="password" id="password-input" placeholder="Mật khẩu">
             <button class="btn-login-submit" onclick="checkPassword()">Đăng nhập</button>
-            <p id="error-msg" style="color: #b71c1c; font-size: 0.75rem; margin-top: 10px; display: none; font-weight: bold;">Sai thông tin đăng nhập!</p>
+            <p id="error-msg" style="color: #b71c1c; font-size: 0.75rem; margin-top: 10px; display: none; font-weight: bold;">Thông tin sai!</p>
         </div>
     </div>
 
     <div id="main-content">
-        <div class="logout-btn" onclick="logout()"><i class="fas fa-power-off"></i> Thoát</div>
-
-        <header class="header">
+        <header class="fixed-header">
+            <div class="logout-btn" onclick="logout()"><i class="fas fa-power-off"></i> Thoát</div>
             <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png">
             <h1>Chi bộ Vụ 2</h1>
             <div class="subtitle">Hệ thống quản lý tài liệu số</div>
@@ -134,8 +139,7 @@
                 <div class="accordion-content">
                     <a href="assets/file/bc_thang1.pdf" class="sub-link">Báo cáo tháng 1</a>
                     <a href="assets/file/bc_thang2.pdf" class="sub-link">Báo cáo tháng 2</a>
-                    <a href="assets/file/bc_thang3.pdf" class="sub-link">Báo cáo tháng 3</a>
-                    <a href="assets/file/bc_tong_ket.pdf" class="sub-link" style="color:#ffc107; font-weight: bold;">Báo cáo tổng kết năm</a>
+                    <a href="assets/file/bc_tong_ket.pdf" class="sub-link" style="color:#ffc107; font-weight:bold;">Báo cáo tổng kết năm</a>
                 </div>
             </div>
 
