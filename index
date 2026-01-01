@@ -4,172 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TÀI LIỆU ĐẠI HỘI CHI BỘ</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
     <style>
-        :root {
-            --primary-color: #0056b3;
-            --bg-color: #f4f7f9;
-            --card-bg: #ffffff;
-            --text-color: #333;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            color: var(--text-color);
-        }
-
-        /* Header phong cách App */
-        .header {
-            background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
-            color: white;
-            text-align: center;
-            padding: 30px 20px;
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .header img {
-            width: 80px;
-            margin-bottom: 10px;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 1.4rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Container chính */
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-        }
-
-        .section-title {
-            font-weight: bold;
-            margin: 20px 0 10px 5px;
-            display: flex;
-            align-items: center;
-            color: var(--primary-color);
-        }
-
-        .section-title i { margin-right: 8px; }
-
-        /* Giao diện Lưới (Grid) */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .app-item {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            text-decoration: none;
-            color: var(--text-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            border: 1px solid #eee;
-        }
-
-        .app-item:active {
-            transform: scale(0.92);
-            background-color: #eef5ff;
-        }
-
-        .app-item i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-
-        .app-item span {
-            font-size: 0.9rem;
-            font-weight: 500;
-            line-height: 1.2;
-        }
-
-        /* Nút đặc biệt (Full width) */
-        .full-width {
-            grid-column: span 2;
-            flex-direction: row;
-            justify-content: center;
-            background: #fff3cd;
-            border-color: #ffeeba;
-        }
-
-        .full-width i { margin-right: 15px; margin-bottom: 0; color: #856404; }
-
-        .footer {
-            text-align: center;
-            padding: 30px;
-            font-size: 0.8rem;
-            color: #888;
-        }
+        :root { --primary-color: #0056b3; --bg-color: #f4f7f9; --card-bg: #ffffff; --text-color: #333; }
+        body { font-family: sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; }
+        .header { background: linear-gradient(135deg, #0056b3 0%, #007bff 100%); color: white; text-align: center; padding: 30px 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; }
+        .header img { width: 80px; margin-bottom: 10px; }
+        .container { padding: 20px; max-width: 600px; margin: auto; }
+        .section-title { font-weight: bold; margin: 20px 0 10px 5px; color: var(--primary-color); }
+        .app-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .app-item { background: var(--card-bg); border-radius: 15px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: var(--text-color); box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .app-item i { font-size: 2rem; margin-bottom: 10px; color: var(--primary-color); }
+        .full-width { grid-column: span 2; flex-direction: row; background: #fff3cd; }
+        .footer { text-align: center; padding: 30px; font-size: 0.8rem; color: #888; }
     </style>
 </head>
 <body>
-
     <div class="header">
-        <img src="assets/images/logo.png" alt="Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Bua_liem.svg/1024px-Bua_liem.svg.png'">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Bua_liem.svg/1024px-Bua_liem.svg.png" alt="Logo">
         <h1>Đại hội Chi bộ<br>Nhiệm kỳ 2025 - 2027</h1>
     </div>
-
     <div class="container">
-        
         <div class="section-title"><i class="fas fa-folder-open"></i> VĂN KIỆN ĐẠI HỘI</div>
         <div class="app-grid">
             <a href="assets/file/bao_cao_chinh_tri.pdf" class="app-item" target="_blank">
-                <i class="fas fa-file-invoice"></i>
-                <span>Báo cáo<br>Chính trị</span>
+                <i class="fas fa-file-invoice"></i><span>Báo cáo<br>Chính trị</span>
             </a>
-            
             <a href="assets/file/nghi_quyet.pdf" class="app-item" target="_blank">
-                <i class="fas fa-gavel"></i>
-                <span>Dự thảo<br>Nghị quyết</span>
+                <i class="fas fa-gavel"></i><span>Dự thảo<br>Nghị quyết</span>
             </a>
         </div>
-
-        <div class="section-title"><i class="fas fa-users"></i> THAM LUẬN ĐƠN VỊ</div>
+        <div class="section-title"><i class="fas fa-users"></i> THAM LUẬN</div>
         <div class="app-grid">
-            <a href="https://drive.google.com/file/d/ID_FILE_CUA_BAN/preview" class="app-item" target="_blank">
-                <i class="fab fa-google-drive"></i>
-                <span>Tham luận<br>Đà Nẵng</span>
-            </a>
-
-            <a href="assets/file/tham_luan_don_vi_2.pdf" class="app-item" target="_blank">
-                <i class="fas fa-file-pdf"></i>
-                <span>Tham luận<br>Đơn vị 2</span>
-            </a>
+            <a href="#" class="app-item" target="_blank"><i class="fab fa-google-drive"></i><span>Đơn vị 1</span></a>
+            <a href="#" class="app-item" target="_blank"><i class="fas fa-file-pdf"></i><span>Đơn vị 2</span></a>
         </div>
-
-        <div class="section-title"><i class="fas fa-video"></i> TƯ LIỆU ĐẠI HỘI</div>
-        <div class="app-grid">
-            <a href="https://youtube.com" class="app-item full-width" target="_blank">
-                <i class="fas fa-play-circle"></i>
-                <span>Phim tư liệu: 95 năm lịch sử Đảng</span>
-            </a>
-        </div>
-
     </div>
-
-    <div class="footer">
-        &copy; 2025 Chi bộ [Tên Đơn Vị Của Bạn]<br>
-        Ứng dụng tài liệu số hóa
-    </div>
-
+    <div class="footer">&copy; 2025 Chi bộ chibovu2</div>
 </body>
 </html>
