@@ -6,34 +6,39 @@
     <title>ĐẠI HỘI CHI BỘ VỤ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. Thiết lập Video làm hình nền toàn màn hình */
+        /* Crop video vừa khít màn hình */
         #bg-video {
             position: fixed;
-            right: 0;
-            bottom: 0;
+            top: 50%;
+            left: 50%;
             min-width: 100%;
             min-height: 100%;
-            z-index: -100; /* Đẩy video xuống lớp dưới cùng */
+            width: auto;
+            height: auto;
+            z-index: -100;
+            transform: translate(-50%, -50%);
             object-fit: cover;
-            filter: brightness(0.7); /* Làm tối video một chút để chữ nổi bật */
+            filter: brightness(0.6);
         }
 
-        /* 2. Cấu hình nội dung nổi lên trên video */
         body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
             height: 100%;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
             overflow-x: hidden;
         }
 
         .container {
+            position: relative;
+            z-index: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 50px 20px;
+            justify-content: flex-start;
             min-height: 100vh;
+            padding: 60px 20px;
             box-sizing: border-box;
         }
 
@@ -42,66 +47,73 @@
             margin-bottom: 40px;
         }
 
+        /* Sử dụng logo Ban Tuyên giáo Trung ương */
         .header img {
-            width: 100px;
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+            width: 110px; /* Tăng kích thước logo một chút cho rõ nét */
             margin-bottom: 15px;
+            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
         }
 
         h1 {
-            font-size: 1.6rem;
+            color: white;
+            font-size: 1.5rem;
             text-transform: uppercase;
             text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
             margin: 0;
+            letter-spacing: 1px;
         }
 
         .subtitle {
-            font-size: 1.1rem;
+            color: #ffc107;
+            font-size: 1rem;
+            font-weight: bold;
             margin-top: 10px;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.8);
         }
 
-        /* 3. Thiết kế nút bấm */
         .menu-list {
             width: 100%;
-            max-width: 400px;
+            max-width: 380px;
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
         .menu-btn {
-            background: rgba(211, 47, 47, 0.85); /* Màu đỏ Đảng có độ trong suốt */
+            background: rgba(211, 47, 47, 0.9);
             color: white;
             text-decoration: none;
-            padding: 18px 25px;
+            padding: 18px;
             border-radius: 50px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #ffc107; /* Viền vàng */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            transition: 0.3s;
+            border: 2px solid #ffc107;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: 0.2s;
             text-transform: uppercase;
+            font-size: 0.9rem;
         }
 
         .menu-btn i {
             margin-right: 12px;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
         .menu-btn:active {
-            transform: scale(0.95);
-            background: rgba(183, 28, 28, 1);
+            transform: scale(0.96);
+            background: #b71c1c;
         }
 
         .footer {
             margin-top: auto;
             text-align: center;
-            font-size: 0.85rem;
+            color: white;
+            font-size: 0.8rem;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 1);
-            padding-top: 30px;
+            padding-top: 40px;
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -109,13 +121,12 @@
 
     <video autoplay muted loop playsinline id="bg-video">
         <source src="https://lecong12.github.io/daihoichibo.github.io/assets/video/codang_troixanh.mp4" type="video/mp4">
-        Trình duyệt của bạn không hỗ trợ video nền.
     </video>
 
     <div class="container">
         <header class="header">
-            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logo.png" alt="Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Bua_liem.svg/1024px-Bua_liem.svg.png'">
-            <h1>ĐẠI HỘI CHI BỘ VỤ 2</h1>
+            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" alt="Logo BTGDVTW" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Bua_liem.svg/1024px-Bua_liem.svg.png'">
+            <h1>Đại hội Chi bộ Vụ 2</h1>
             <div class="subtitle">Nhiệm kỳ 2025 - 2027</div>
         </header>
 
@@ -134,8 +145,8 @@
         </nav>
 
         <footer class="footer">
-            CHI BỘ VỤ 2 - ĐẢNG BỘ CƠ QUAN<br>
-            Tài liệu số phục vụ Đại hội
+            BAN TỔ CHỨC ĐẠI HỘI CHI BỘ VỤ 2<br>
+            © 2026 - Tài liệu số phục vụ Đại hội
         </footer>
     </div>
 
