@@ -6,7 +6,7 @@
     <title>ĐẠI HỘI CHI BỘ VỤ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. VIDEO NỀN - Đảm bảo luôn hiển thị */
+        /* 1. VIDEO NỀN */
         #bg-video {
             position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
             z-index: -100; transform: translate(-50%, -50%);
@@ -45,7 +45,7 @@
             min-height: 100vh; overflow-y: auto; box-sizing: border-box;
         }
 
-        /* NÚT ĐĂNG XUẤT - Cố định ở góc phải */
+        /* NÚT ĐĂNG XUẤT */
         .logout-btn {
             position: fixed; top: 15px; right: 15px;
             background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255,255,255,0.3);
@@ -68,7 +68,7 @@
         }
         .menu-btn i { margin-right: 10px; font-size: 1.1rem; }
 
-        /* STYLE DANH SÁCH THẢ XUỐNG (ACCORDION) */
+        /* STYLE DANH SÁCH THẢ XUỐNG */
         .accordion-item {
             background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; overflow: hidden;
@@ -98,10 +98,9 @@
         <div class="login-box">
             <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="80">
             <h2 style="font-size: 1.1rem; margin: 15px 0 5px;">ĐẠI HỘI CHI BỘ VỤ 2</h2>
-            <p style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 0;">Mật khẩu nội bộ</p>
-            <input type="password" id="password-input" placeholder="Nhập mật khẩu">
+            <input type="password" id="password-input" placeholder="Mật khẩu: vu2">
             <button onclick="checkPassword()">Xác nhận</button>
-            <p id="error-msg" style="color: yellow; font-size: 0.8rem; margin-top: 10px; display: none;">Mật khẩu không chính xác!</p>
+            <p id="error-msg" style="color: yellow; font-size: 0.8rem; margin-top: 10px; display: none;">Mật khẩu không đúng!</p>
         </div>
     </div>
 
@@ -175,15 +174,11 @@
                 <div class="accordion-content">
                     <a href="assets/file/chuyen_de_1.pdf" class="sub-link">Chuyên đề Quý I</a>
                     <a href="assets/file/chuyen_de_2.pdf" class="sub-link">Chuyên đề Quý II</a>
-                    <a href="assets/file/chuyen_de_3.pdf" class="sub-link">Chuyên đề Quý III</a>
-                    <a href="assets/file/chuyen_de_4.pdf" class="sub-link">Chuyên đề Quý IV</a>
                 </div>
             </div>
         </nav>
 
-        <footer class="footer">
-            BAN TỔ CHỨC ĐẠI HỘI CHI BỘ VỤ 2<br>© 2026
-        </footer>
+        <footer class="footer">BAN TỔ CHỨC ĐẠI HỘI CHI BỘ VỤ 2</footer>
     </div>
 
     <script>
@@ -198,17 +193,14 @@
                 sessionStorage.setItem('isLoggedIn', 'true');
             } else {
                 document.getElementById('error-msg').style.display = 'block';
-                document.getElementById('password-input').value = "";
             }
         }
 
-        // ĐĂNG XUẤT - Xóa trạng thái và tải lại trang
         function logout() {
             sessionStorage.removeItem('isLoggedIn');
             location.reload(); 
         }
 
-        // TỰ ĐỘNG KIỂM TRA ĐĂNG NHẬP KHI TẢI TRANG
         window.onload = function() {
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('login-overlay').style.display = 'none';
@@ -217,12 +209,10 @@
             }
         }
 
-        // NHẤN ENTER ĐỂ ĐĂNG NHẬP
         document.getElementById('password-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') { checkPassword(); }
         });
 
-        // HIỆU ỨNG THẢ XUỐNG
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
             const icon = element.querySelector('.fa-chevron-down');
