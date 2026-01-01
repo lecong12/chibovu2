@@ -2,77 +2,162 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TÀI LIỆU ĐẠI HỘI VỤ 2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ĐẠI HỘI CHI BỘ VỤ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        :root { --red: #d32f2f; --gold: #ffc107; }
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 50px; }
+        :root { --gold: #ffc107; }
         
-        .header { 
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://pbgdpl.moj.gov.vn/qt/tintuc/PublishingImages/dang3.jpg');
-            background-size: cover; background-position: center;
-            color: white; text-align: center; padding: 40px 15px; border-bottom: 4px solid var(--gold);
+        * { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Arial, sans-serif; overflow-x: hidden; background-color: #000; }
+
+        /* Video Hình nền chạy toàn màn hình */
+        #video-bg {
+            position: fixed;
+            right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -2;
+            object-fit: cover;
+            filter: brightness(0.5); /* Làm tối video để nổi chữ */
         }
 
-        .container { max-width: 500px; margin: auto; padding: 15px; }
-        
-        .section-title { 
-            font-weight: bold; color: var(--red); margin: 25px 0 15px;
-            border-left: 4px solid var(--red); padding-left: 10px; text-transform: uppercase;
+        /* Lớp phủ màu để tăng độ sâu */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: -1;
         }
 
-        /* Danh sách nút bấm */
-        .list-group { display: flex; flex-direction: column; gap: 12px; }
-
-        .item { 
-            background: white; padding: 15px; border-radius: 12px;
-            display: flex; align-items: center; text-decoration: none; 
-            color: #333; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: white;
         }
 
-        .item i { font-size: 1.5rem; margin-right: 15px; color: var(--red); min-width: 30px; text-align: center; }
-        
-        /* Màu riêng cho mục Video và Ảnh để nổi bật */
-        .item-special { background: #fff9e6; border: 1px solid var(--gold); }
+        /* Header */
+        .header { text-align: center; margin-bottom: 30px; }
+        .header img {
+            width: 90px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+        .header h1 {
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            margin: 0;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+            color: white;
+        }
+        .header p { font-size: 1rem; margin-top: 5px; opacity: 0.9; }
 
-        .footer { text-align: center; padding: 30px; font-size: 0.8rem; color: #666; }
+        /* Container chứa các nút bấm */
+        .menu-container { width: 100%; max-width: 450px; }
+
+        .group-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 25px 0 12px 10px;
+            color: var(--gold);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .group-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin-left: 10px;
+        }
+
+        /* Nút bấm kiểu Glassmorphism (Kính mờ) */
+        .btn-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 18px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        .btn-item:active {
+            transform: scale(0.97);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .btn-item i {
+            font-size: 1.4rem;
+            margin-right: 18px;
+            width: 25px;
+            text-align: center;
+            color: var(--gold);
+        }
+        .btn-item span { font-weight: 600; font-size: 1rem; }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <img src="assets/file/images/logo.png" width="80" onerror="this.src='https://docs.google.com/spreadsheets/d/1CuGNxogq5bcrPYeCqFcEp4bGBAvbuhFhmU26kyP0rjQ/edit?usp=drivesdk'"><br>
-        <h1 style="font-size: 1.3rem; margin-top:10px;">ĐẠI HỘI CHI BỘ VỤ 2</h1>
-    </div>
+    <video autoplay muted loop playsinline id="video-bg">
+        <source src="https://lecong12.github.io/daihoichibo.github.io/assets/video/codang_troixanh.mp4" type="video/mp4">
+    </video>
 
-    <div class="container">
-        
-        <div class="section-title">Văn kiện Đại hội</div>
-        <div class="list-group">
-            <a href="assets/file/bao_cao_chinh_tri.pdf" class="item" target="_blank">
-                <i class="fas fa-file-pdf"></i> Báo cáo Chính trị
-            </a>
-            <a href="assets/file/nghi_quyet.pdf" class="item" target="_blank">
-                <i class="fas fa-file-signature"></i> Dự thảo Nghị quyết
-            </a>
-        </div>
+    <div class="overlay"></div>
 
-        <div class="section-title">Tư liệu & Hình ảnh</div>
-        <div class="list-group">
-            <a href="assets/file/video/phim_tu_lieu.mp4" class="item item-special" target="_blank">
-                <i class="fas fa-play-circle"></i> XEM VIDEO TƯ LIỆU ĐẠI HỘI
-            </a>
-            
-            <a href="assets/file/images/album_anh.pdf" class="item item-special" target="_blank">
-                <i class="fas fa-images"></i> ALBUM ẢNH HOẠT ĐỘNG
-            </a>
-        </div>
+    <div class="content-wrapper">
+        <header class="header">
+            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logo.png" alt="Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Bua_liem.svg/1024px-Bua_liem.svg.png'">
+            <h1>Đại hội Chi bộ Vụ 2</h1>
+            <p>Nhiệm kỳ 2025 - 2027</p>
+        </header>
 
-    </div>
+        <main class="menu-container">
+            <div class="group-title">Văn kiện đại hội</div>
+            <a href="assets/file/bao_cao_chinh_tri.pdf" class="btn-item">
+                <i class="fas fa-file-pdf"></i>
+                <span>Báo cáo Chính trị</span>
+            </a>
+            <a href="assets/file/nghi_quyet.pdf" class="btn-item">
+                <i class="fas fa-file-contract"></i>
+                <span>Dự thảo Nghị quyết</span>
+            </a>
 
-    <div class="footer">
-        BAN TỔ CHỨC ĐẠI HỘI CHI BỘ VỤ 2<br>Nhiệm kỳ 2025 - 2027
+            <div class="group-title">Hình ảnh & Tư liệu</div>
+            <a href="assets/file/images/album_anh.pdf" class="btn-item">
+                <i class="fas fa-images"></i>
+                <span>Album ảnh hoạt động</span>
+            </a>
+            <a href="https://lecong12.github.io/daihoichibo.github.io/assets/video/codang_troixanh.mp4" class="btn-item">
+                <i class="fas fa-play-circle"></i>
+                <span>Xem Video Cờ Đảng</span>
+            </a>
+        </main>
+
+        <footer class="footer">
+            BAN TỔ CHỨC ĐẠI HỘI CHI BỘ VỤ 2<br>
+            © 2026 - Tài liệu số hóa nội bộ
+        </footer>
     </div>
 
 </body>
