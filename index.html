@@ -6,105 +6,98 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. KHẮC PHỤC LỖI TRÀN VIDEO NỀN */
+        /* 1. NỀN VIDEO CĂN GIỮA CHUẨN */
         #bg-video {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
+            position: fixed; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
             z-index: -1000;
-            /* Căn giữa video tuyệt đối */
             transform: translate(-50%, -50%);
-            /* Chuyển sang contain nếu muốn thấy toàn bộ video, 
-               nhưng cover vẫn tốt nhất nếu căn giữa đúng cách */
-            object-fit: cover; 
-            filter: brightness(0.55);
+            object-fit: cover;
+            filter: brightness(0.6);
             background: black;
         }
 
         body, html {
-            margin: 0; padding: 0;
-            width: 100%; min-height: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: transparent;
-            color: white;
-            overflow-x: hidden; /* Ngăn chặn cuộn ngang */
+            background: transparent; color: white; overflow-x: hidden;
         }
 
-        /* 2. MÀN HÌNH ĐĂNG NHẬP */
+        /* 2. KHÔI PHỤC MÀN HÌNH ĐĂNG NHẬP ĐẸP (BLUE GLASS) */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(225, 245, 254, 0.9); 
+            background: rgba(225, 245, 254, 0.4); /* Màu xanh lơ nhạt trong suốt */
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(15px); /* Hiệu ứng kính mờ sang trọng */
+            -webkit-backdrop-filter: blur(15px);
         }
         .login-box {
-            background: white; padding: 30px; border-radius: 20px;
-            text-align: center; width: 260px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.3); /* Trắng mờ xuyên thấu */
+            padding: 40px 25px; border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            text-align: center; width: 80%; max-width: 300px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
-        .login-box h2 { color: #0d47a1; margin-bottom: 20px; font-size: 1.1rem; text-transform: uppercase; font-weight: bold; }
+        .login-box img { width: 75px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+        .login-box h2 { 
+            color: #0d47a1; font-size: 1.2rem; margin-bottom: 25px; 
+            text-transform: uppercase; font-weight: bold; letter-spacing: 1px;
+        }
         .login-box input {
-            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px;
-            border: 1px solid #ddd; box-sizing: border-box; text-align: center; outline: none; font-size: 16px; /* Chặn auto-zoom trên iPhone */
+            width: 100%; padding: 14px; margin: 8px 0; border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5); outline: none; text-align: center; 
+            font-size: 1rem; box-sizing: border-box; background: rgba(255, 255, 255, 0.8); color: #333;
         }
         .btn-login-submit {
-            background: #0d47a1; color: white; border: none; padding: 12px;
-            width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase;
+            background: #0d47a1; color: white; border: none; padding: 14px; margin-top: 15px;
+            border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; 
+            text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3);
         }
 
         /* 3. HEADER CỐ ĐỊNH */
         .fixed-header {
             position: fixed; top: 0; left: 0; width: 100%;
             z-index: 1000; padding: 15px 0;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.5);
+            text-align: center; background: rgba(0, 0, 0, 0.4);
         }
-        .fixed-header img { width: 60px; filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
-        .fixed-header h1 { font-size: 1.25rem; text-transform: uppercase; margin: 5px 0; letter-spacing: 1px; }
-        .fixed-header .subtitle { color: #ffc107; font-size: 0.8rem; font-weight: bold; }
+        .fixed-header img { width: 65px; filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
+        .fixed-header h1 { font-size: 1.3rem; text-transform: uppercase; margin: 5px 0; }
+        .fixed-header .subtitle { color: #ffc107; font-size: 0.85rem; font-weight: bold; }
 
         .logout-btn {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(13, 71, 161, 0.8); color: white; padding: 5px 10px;
-            border-radius: 5px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase;
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(13, 71, 161, 0.8); color: white; padding: 5px 12px;
+            border-radius: 8px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase;
         }
 
-        /* 4. VÙNG NỘI DUNG CUỘN */
+        /* 4. NỘI DUNG CUỘN */
         #main-content {
-            display: none;
-            padding-top: 170px; 
-            padding-bottom: 50px;
-            width: 100%;
-            position: relative;
-            z-index: 1;
+            display: none; padding-top: 180px; padding-bottom: 50px;
+            width: 100%; position: relative; z-index: 1;
         }
-
-        .menu-list { width: 90%; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+        .menu-list { width: 92%; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
         .menu-btn {
-            background: rgba(255, 255, 255, 0.12);
-            color: white; text-decoration: none; padding: 15px;
-            border-radius: 30px; font-weight: bold; text-align: center;
-            border: 1.5px solid #ffc107;
-            text-transform: uppercase; font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.12); color: white; text-decoration: none; padding: 16px;
+            border-radius: 35px; font-weight: bold; text-align: center;
+            border: 1.5px solid #ffc107; text-transform: uppercase; font-size: 0.85rem;
         }
 
         .accordion-item {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 15px; overflow: hidden;
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 18px; overflow: hidden;
         }
         .accordion-header {
-            padding: 15px; cursor: pointer; display: flex; justify-content: space-between;
+            padding: 16px; cursor: pointer; display: flex; justify-content: space-between;
             color: #ffc107; font-weight: bold; font-size: 0.85rem; text-transform: uppercase;
         }
-        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.4); }
-        .sub-link { display: block; padding: 13px 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.3); }
+        .sub-link { display: block; padding: 14px 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.92rem; }
         .highlight { color: #ffc107 !important; font-weight: bold; }
 
-        .footer { text-align: center; padding: 40px; font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; }
+        .footer { text-align: center; padding: 40px; font-size: 0.75rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -115,12 +108,12 @@
 
     <div id="login-overlay">
         <div class="login-box">
-            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="60">
-            <h2>HỆ THỐNG NỘI BỘ</h2>
+            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png">
+            <h2>Chi bộ Vụ 2</h2>
             <input type="text" id="username-input" placeholder="Tên đăng nhập">
             <input type="password" id="password-input" placeholder="Mật khẩu">
-            <button class="btn-login-submit" onclick="checkPassword()">ĐĂNG NHẬP</button>
-            <p id="error-msg" style="color: red; font-size: 0.7rem; display: none; margin-top: 10px;">Sai thông tin đăng nhập!</p>
+            <button class="btn-login-submit" onclick="checkPassword()">Đăng nhập</button>
+            <p id="error-msg" style="color: #b71c1c; font-size: 0.75rem; margin-top: 10px; display: none; font-weight: bold;">Thông tin sai!</p>
         </div>
     </div>
 
@@ -197,7 +190,7 @@
                 </div>
             </div>
 
-            <footer class="footer">Ban chi ủy Chi bộ Vụ 2</footer>
+            <footer class="footer">BAN CHI ỦY CHI BỘ VỤ 2</footer>
         </nav>
     </div>
 
