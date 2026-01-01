@@ -6,15 +6,22 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. KHÓA CHẶT VIDEO NỀN */
+        /* 1. KHẮC PHỤC LỖI TRÀN VIDEO NỀN */
         #bg-video {
             position: fixed;
-            right: 0; bottom: 0;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
             z-index: -1000;
-            object-fit: cover;
-            filter: brightness(0.6);
+            /* Căn giữa video tuyệt đối */
+            transform: translate(-50%, -50%);
+            /* Chuyển sang contain nếu muốn thấy toàn bộ video, 
+               nhưng cover vẫn tốt nhất nếu căn giữa đúng cách */
+            object-fit: cover; 
+            filter: brightness(0.55);
             background: black;
         }
 
@@ -24,12 +31,13 @@
             font-family: 'Segoe UI', Arial, sans-serif;
             background: transparent;
             color: white;
+            overflow-x: hidden; /* Ngăn chặn cuộn ngang */
         }
 
-        /* 2. MÀN HÌNH ĐĂNG NHẬP (MÀU XANH NHẸ) */
+        /* 2. MÀN HÌNH ĐĂNG NHẬP */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(225, 245, 254, 0.85); 
+            background: rgba(225, 245, 254, 0.9); 
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .login-box {
@@ -39,7 +47,7 @@
         .login-box h2 { color: #0d47a1; margin-bottom: 20px; font-size: 1.1rem; text-transform: uppercase; font-weight: bold; }
         .login-box input {
             width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px;
-            border: 1px solid #ddd; box-sizing: border-box; text-align: center; outline: none;
+            border: 1px solid #ddd; box-sizing: border-box; text-align: center; outline: none; font-size: 16px; /* Chặn auto-zoom trên iPhone */
         }
         .btn-login-submit {
             background: #0d47a1; color: white; border: none; padding: 12px;
@@ -51,11 +59,11 @@
             position: fixed; top: 0; left: 0; width: 100%;
             z-index: 1000; padding: 15px 0;
             text-align: center;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
         }
-        .fixed-header img { width: 65px; filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
-        .fixed-header h1 { font-size: 1.3rem; text-transform: uppercase; margin: 5px 0; }
-        .fixed-header .subtitle { color: #ffc107; font-size: 0.85rem; font-weight: bold; }
+        .fixed-header img { width: 60px; filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
+        .fixed-header h1 { font-size: 1.25rem; text-transform: uppercase; margin: 5px 0; letter-spacing: 1px; }
+        .fixed-header .subtitle { color: #ffc107; font-size: 0.8rem; font-weight: bold; }
 
         .logout-btn {
             position: absolute; top: 10px; right: 10px;
@@ -66,7 +74,7 @@
         /* 4. VÙNG NỘI DUNG CUỘN */
         #main-content {
             display: none;
-            padding-top: 175px; 
+            padding-top: 170px; 
             padding-bottom: 50px;
             width: 100%;
             position: relative;
@@ -76,7 +84,7 @@
         .menu-list { width: 90%; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
 
         .menu-btn {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.12);
             color: white; text-decoration: none; padding: 15px;
             border-radius: 30px; font-weight: bold; text-align: center;
             border: 1.5px solid #ffc107;
@@ -84,7 +92,7 @@
         }
 
         .accordion-item {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 15px; overflow: hidden;
         }
@@ -92,12 +100,11 @@
             padding: 15px; cursor: pointer; display: flex; justify-content: space-between;
             color: #ffc107; font-weight: bold; font-size: 0.85rem; text-transform: uppercase;
         }
-        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.3); }
-        .sub-link { display: block; padding: 12px 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
-        .sub-link:last-child { border-bottom: none; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.4); }
+        .sub-link { display: block; padding: 13px 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
         .highlight { color: #ffc107 !important; font-weight: bold; }
 
-        .footer { text-align: center; padding: 30px; font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; }
+        .footer { text-align: center; padding: 40px; font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -113,7 +120,7 @@
             <input type="text" id="username-input" placeholder="Tên đăng nhập">
             <input type="password" id="password-input" placeholder="Mật khẩu">
             <button class="btn-login-submit" onclick="checkPassword()">ĐĂNG NHẬP</button>
-            <p id="error-msg" style="color: red; font-size: 0.7rem; display: none; margin-top: 10px;">Thông tin không chính xác!</p>
+            <p id="error-msg" style="color: red; font-size: 0.7rem; display: none; margin-top: 10px;">Sai thông tin đăng nhập!</p>
         </div>
     </div>
 
@@ -155,7 +162,6 @@
                 <div class="accordion-content">
                     <a href="assets/file/nghi_quyet_du.pdf" class="sub-link">Nghị quyết Đảng ủy</a>
                     <a href="assets/file/huong_dan.pdf" class="sub-link">Hướng dẫn thực hiện</a>
-                    <a href="assets/file/ke_hoach.pdf" class="sub-link">Kế hoạch công tác</a>
                 </div>
             </div>
 
@@ -165,7 +171,6 @@
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
-                    <a href="https://xaydungdang.vn/" target="_blank" class="sub-link">Tạp chí Xây dựng Đảng</a>
                 </div>
             </div>
 
@@ -192,19 +197,17 @@
                 </div>
             </div>
 
-            <footer class="footer">BAN CHI ỦY CHI BỘ VỤ 2</footer>
+            <footer class="footer">Ban chi ủy Chi bộ Vụ 2</footer>
         </nav>
     </div>
 
     <script>
         const VALID_USER = "v2"; const VALID_PASS = "vu2";
-
         function showApp() {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
         }
-
         function checkPassword() {
             const user = document.getElementById('username-input').value;
             const pass = document.getElementById('password-input').value;
@@ -215,20 +218,13 @@
                 document.getElementById('error-msg').style.display = 'block';
             }
         }
-
         function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
-
         window.onload = function() {
             if (sessionStorage.getItem('isLoggedInV2') === 'true') { showApp(); }
         }
-
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
-            if (content.style.maxHeight && content.style.maxHeight !== "0px") {
-                content.style.maxHeight = "0px";
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-            }
+            content.style.maxHeight = (content.style.maxHeight && content.style.maxHeight !== "0px") ? "0px" : content.scrollHeight + "px";
         }
     </script>
 </body>
