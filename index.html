@@ -6,30 +6,23 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. XỬ LÝ NỀN VIDEO CỐ ĐỊNH TUYỆT ĐỐI */
+        /* 1. KHÓA VIDEO NỀN TUYỆT ĐỐI */
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
             font-family: 'Segoe UI', Arial, sans-serif; 
-            background: #000; /* Phòng hờ video tải chậm */
-            overflow: hidden; /* Khóa cuộn toàn trang để dùng lớp cuộn riêng */
+            background-color: transparent; /* Quan trọng: để thấy video */
         }
 
         #bg-video {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            z-index: -2; /* Nằm sâu nhất */
             object-fit: cover; 
             filter: brightness(0.6);
         }
 
-        /* 2. LỚP CUỘN NỘI DUNG RIÊNG BIỆT */
-        .scroll-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            overflow-y: auto; /* Chỉ cuộn bên trong lớp này */
-            -webkit-overflow-scrolling: touch; /* Mượt hơn trên iPhone */
-            z-index: 1;
-        }
-
-        /* 3. ĐĂNG NHẬP MÀU XANH NHẸ */
+        /* 2. MÀN HÌNH ĐĂNG NHẬP TRONG SUỐT NHẸ */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(225, 245, 254, 0.4); 
@@ -37,7 +30,7 @@
             backdrop-filter: blur(12px);
         }
         .login-box {
-            background: rgba(255, 255, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.6); /* Tăng độ mờ để thấy nền */
             padding: 35px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.5);
             text-align: center; width: 75%; max-width: 280px;
         }
@@ -51,16 +44,17 @@
             border-radius: 20px; font-weight: bold; width: 90%; cursor: pointer;
         }
 
-        /* 4. HEADER CỐ ĐỊNH */
+        /* 3. PHẦN ĐẦU TRANG CỐ ĐỊNH (FIXED) */
         .fixed-header {
-            position: sticky; top: 0; width: 100%;
+            position: fixed; top: 0; left: 0; width: 100%;
             z-index: 1000; padding: 20px 0 10px;
             text-align: center;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.3); /* Chỉ mờ nhẹ để thấy cờ xuyên qua */
             backdrop-filter: blur(8px);
+            color: white;
         }
         .fixed-header img { width: 75px; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)); }
-        .fixed-header h1 { font-size: 1.35rem; text-transform: uppercase; margin: 5px 0; color: white; }
+        .fixed-header h1 { font-size: 1.35rem; text-transform: uppercase; margin: 5px 0; }
         .fixed-header .subtitle { color: #ffc107; font-weight: bold; font-size: 0.9rem; }
 
         .logout-btn {
@@ -69,13 +63,21 @@
             border-radius: 10px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase;
         }
 
-        /* 5. DANH SÁCH MENU TRONG SUỐT */
+        /* 4. KHU VỰC NỘI DUNG - CHO PHÉP CUỘN TRÊN NỀN VIDEO */
+        #main-content {
+            display: none; 
+            padding: 190px 15px 40px; /* Padding để không bị che bởi fixed-header */
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 101vh; /* Đảm bảo luôn có thể cuộn nhẹ */
+        }
+        
         .menu-list { 
-            width: 90%; max-width: 400px; margin: 20px auto; 
+            width: 95%; max-width: 400px; margin: 0 auto; 
             display: flex; flex-direction: column; gap: 12px; 
-            padding-bottom: 50px;
         }
 
+        /* NÚT TRONG SUỐT GLASSMORPHISM */
         .menu-btn {
             background: rgba(255, 255, 255, 0.1); 
             color: white; text-decoration: none; padding: 16px;
@@ -95,10 +97,10 @@
             padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
             font-weight: bold; color: #ffc107; text-transform: uppercase; font-size: 0.85rem;
         }
-        .accordion-content { max-height: 0; overflow: hidden; transition: 0.4s; background: rgba(0,0,0,0.3); }
-        .sub-link { display: block; padding: 14px 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: 0.4s; background: rgba(0,0,0,0.4); }
+        .sub-link { display: block; padding: 15px 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-        .footer { text-align: center; font-size: 0.7rem; padding: 20px 0; opacity: 0.7; }
+        .footer { text-align: center; font-size: 0.7rem; padding: 40px 0; opacity: 0.8; color: white; }
     </style>
 </head>
 <body>
@@ -118,15 +120,14 @@
         </div>
     </div>
 
-    <div class="scroll-container" id="main-content" style="display:none;">
-        
-        <header class="fixed-header">
-            <div class="logout-btn" onclick="logout()">Thoát</div>
-            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png">
-            <h1>Chi bộ Vụ 2</h1>
-            <div class="subtitle">Hệ thống quản lý tài liệu số</div>
-        </header>
+    <header id="header-fixed" class="fixed-header" style="display:none;">
+        <div class="logout-btn" onclick="logout()">Thoát</div>
+        <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png">
+        <h1>Chi bộ Vụ 2</h1>
+        <div class="subtitle">Hệ thống quản lý tài liệu số</div>
+    </header>
 
+    <div id="main-content">
         <nav class="menu-list">
             <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn">
                 <i class="fas fa-file-pdf"></i> Báo cáo chính trị
@@ -146,7 +147,6 @@
                 <div class="accordion-content">
                     <a href="assets/file/bc_thang1.pdf" class="sub-link">Báo cáo tháng 1</a>
                     <a href="assets/file/bc_thang2.pdf" class="sub-link">Báo cáo tháng 2</a>
-                    <a href="assets/file/bc_tong_ket.pdf" class="sub-link" style="color:#ffc107;">Báo cáo tổng kết năm</a>
                 </div>
             </div>
 
@@ -168,7 +168,6 @@
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
-                    <a href="https://xaydungdang.vn/" target="_blank" class="sub-link">Tạp chí Xây dựng Đảng</a>
                 </div>
             </div>
 
@@ -179,7 +178,6 @@
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/bb_thang1.pdf" class="sub-link">Biên bản tháng 1</a>
-                    <a href="assets/file/bb_thang2.pdf" class="sub-link">Biên bản tháng 2</a>
                 </div>
             </div>
 
@@ -190,7 +188,6 @@
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/chuyen_de_1.pdf" class="sub-link">Chuyên đề Quý I</a>
-                    <a href="assets/file/chuyen_de_2.pdf" class="sub-link">Chuyên đề Quý II</a>
                 </div>
             </div>
 
@@ -201,12 +198,18 @@
     <script>
         const VALID_USER = "v2"; const VALID_PASS = "vu2";
 
+        function showApp() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('header-fixed').style.display = 'block';
+            document.getElementById('main-content').style.display = 'block';
+            document.body.style.overflow = 'auto';
+        }
+
         function checkPassword() {
             const user = document.getElementById('username-input').value;
             const pass = document.getElementById('password-input').value;
             if (user === VALID_USER && pass === VALID_PASS) {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
+                showApp();
                 sessionStorage.setItem('isLoggedInV2', 'true');
             } else {
                 document.getElementById('error-msg').style.display = 'block';
@@ -217,8 +220,7 @@
 
         window.onload = function() {
             if (sessionStorage.getItem('isLoggedInV2') === 'true') {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
+                showApp();
             }
         }
 
