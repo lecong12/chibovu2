@@ -24,36 +24,28 @@
             background: transparent; color: white; overflow-x: hidden;
         }
 
-        /* 2. KHÔI PHỤC MÀN HÌNH ĐĂNG NHẬP ĐẸP (BLUE GLASS) */
+        /* 2. MÀN HÌNH ĐĂNG NHẬP (BLUE GLASS) */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(225, 245, 254, 0.4); /* Màu xanh lơ nhạt trong suốt */
+            background: rgba(225, 245, 254, 0.4); 
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(15px); /* Hiệu ứng kính mờ sang trọng */
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
         .login-box {
-            background: rgba(255, 255, 255, 0.3); /* Trắng mờ xuyên thấu */
-            padding: 40px 25px; border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            text-align: center; width: 80%; max-width: 300px;
+            background: rgba(255, 255, 255, 0.3); padding: 40px 25px; border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5); text-align: center; width: 80%; max-width: 300px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
-        .login-box img { width: 75px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
-        .login-box h2 { 
-            color: #0d47a1; font-size: 1.2rem; margin-bottom: 25px; 
-            text-transform: uppercase; font-weight: bold; letter-spacing: 1px;
-        }
+        .login-box img { width: 75px; margin-bottom: 15px; }
+        .login-box h2 { color: #0d47a1; font-size: 1.2rem; margin-bottom: 25px; text-transform: uppercase; font-weight: bold; }
         .login-box input {
             width: 100%; padding: 14px; margin: 8px 0; border-radius: 25px;
             border: 1px solid rgba(255, 255, 255, 0.5); outline: none; text-align: center; 
-            font-size: 1rem; box-sizing: border-box; background: rgba(255, 255, 255, 0.8); color: #333;
+            font-size: 1rem; box-sizing: border-box; background: rgba(255, 255, 255, 0.8);
         }
         .btn-login-submit {
             background: #0d47a1; color: white; border: none; padding: 14px; margin-top: 15px;
-            border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; 
-            text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3);
+            border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase;
         }
 
         /* 3. HEADER CỐ ĐỊNH */
@@ -63,41 +55,56 @@
             text-align: center; background: rgba(0, 0, 0, 0.4);
         }
         .fixed-header img { width: 65px; filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
-        .fixed-header h1 { font-size: 1.3rem; text-transform: uppercase; margin: 5px 0; }
-        .fixed-header .subtitle { color: #ffc107; font-size: 0.85rem; font-weight: bold; }
+        /* Tăng cỡ chữ tiêu đề chính */
+        .fixed-header h1 { font-size: 1.5rem; text-transform: uppercase; margin: 5px 0; letter-spacing: 2px; font-weight: 800; }
+        .fixed-header .subtitle { color: #ffc107; font-size: 1rem; font-weight: bold; letter-spacing: 1px; }
 
         .logout-btn {
             position: absolute; top: 12px; right: 12px;
             background: rgba(13, 71, 161, 0.8); color: white; padding: 5px 12px;
-            border-radius: 8px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase;
+            border-radius: 8px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;
         }
 
-        /* 4. NỘI DUNG CUỘN */
+        /* 4. NỘI DUNG CHÍNH - NÂNG CẤP KÍCH THƯỚC CHỮ */
         #main-content {
-            display: none; padding-top: 180px; padding-bottom: 50px;
+            display: none; padding-top: 190px; padding-bottom: 60px;
             width: 100%; position: relative; z-index: 1;
         }
-        .menu-list { width: 92%; max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+        .menu-list { width: 92%; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
 
+        /* Nút lớn và sang trọng hơn */
         .menu-btn {
-            background: rgba(255, 255, 255, 0.12); color: white; text-decoration: none; padding: 16px;
-            border-radius: 35px; font-weight: bold; text-align: center;
-            border: 1.5px solid #ffc107; text-transform: uppercase; font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.12); color: white; text-decoration: none; 
+            padding: 18px 10px; border-radius: 40px; font-weight: bold; text-align: center;
+            border: 2px solid #ffc107; text-transform: uppercase; 
+            font-size: 1rem; /* Tăng từ 0.85 lên 1rem */
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
         }
+        .menu-btn i { margin-right: 12px; font-size: 1.2rem; color: #ffc107; }
 
         .accordion-item {
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 18px; overflow: hidden;
+            border-radius: 20px; overflow: hidden;
         }
         .accordion-header {
-            padding: 16px; cursor: pointer; display: flex; justify-content: space-between;
-            color: #ffc107; font-weight: bold; font-size: 0.85rem; text-transform: uppercase;
+            padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            color: #ffc107; font-weight: bold; 
+            font-size: 0.95rem; /* Tăng cỡ chữ tiêu đề mục */
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
+        .accordion-header i { font-size: 1.1rem; }
+        
         .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.3); }
-        .sub-link { display: block; padding: 14px 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.92rem; }
+        .sub-link { 
+            display: block; padding: 16px 25px; color: white; text-decoration: none; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            font-size: 1rem; /* Tăng cỡ chữ tài liệu con */
+        }
         .highlight { color: #ffc107 !important; font-weight: bold; }
 
-        .footer { text-align: center; padding: 40px; font-size: 0.75rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        .footer { text-align: center; padding: 50px 20px; font-size: 0.85rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -126,13 +133,19 @@
 
     <div id="main-content">
         <nav class="menu-list">
-            <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn">Báo cáo chính trị</a>
-            <a href="assets/file/nghi_quyet.pdf" target="_blank" class="menu-btn">Dự thảo Nghị quyết</a>
-            <a href="assets/file/images/album_anh.pdf" class="menu-btn">Hình ảnh hoạt động</a>
+            <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn">
+                <i class="fas fa-file-pdf"></i> Báo cáo chính trị
+            </a>
+            <a href="assets/file/nghi_quyet.pdf" target="_blank" class="menu-btn">
+                <i class="fas fa-file-signature"></i> Dự thảo Nghị quyết
+            </a>
+            <a href="assets/file/images/album_anh.pdf" class="menu-btn">
+                <i class="fas fa-images"></i> Hình ảnh hoạt động
+            </a>
 
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>1. Báo cáo Chi bộ</span><i class="fas fa-chevron-down"></i>
+                    <span><i class="fas fa-calendar-check"></i> 1. Báo cáo Chi bộ</span><i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/bc_thang1.pdf" class="sub-link">Báo cáo tháng 1</a>
@@ -150,7 +163,7 @@
 
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>2. Văn bản Đảng ủy</span><i class="fas fa-chevron-down"></i>
+                    <span><i class="fas fa-folder-open"></i> 2. Văn bản Đảng ủy</span><i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/nghi_quyet_du.pdf" class="sub-link">Nghị quyết Đảng ủy</a>
@@ -160,7 +173,7 @@
 
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>3. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i>
+                    <span><i class="fas fa-star"></i> 3. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
@@ -169,7 +182,7 @@
 
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>4. Biên bản họp Chi bộ</span><i class="fas fa-chevron-down"></i>
+                    <span><i class="fas fa-pen-nib"></i> 4. Biên bản họp Chi bộ</span><i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/bb_thang1.pdf" class="sub-link">Biên bản tháng 1</a>
@@ -180,7 +193,7 @@
 
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>5. Sinh hoạt chuyên đề 2025</span><i class="fas fa-chevron-down"></i>
+                    <span><i class="fas fa-book-open"></i> 5. Sinh hoạt chuyên đề 2025</span><i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/chuyen_de_q1.pdf" class="sub-link">Chuyên đề Quý I/2025</a>
