@@ -14,13 +14,19 @@
             z-index: -1000;
             transform: translate(-50%, -50%);
             object-fit: cover;
-            filter: brightness(0.9); 
+            filter: brightness(0.9);
+            transition: filter 0.5s ease; /* Hiệu ứng mượt khi chuyển đổi */
+        }
+
+        /* Khi chưa đăng nhập, làm video mờ đi một chút */
+        .video-blurred {
+            filter: brightness(0.5) blur(5px) !important;
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100%;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: transparent;
+            background: #000;
             color: white; overflow-x: hidden;
         }
 
@@ -42,7 +48,7 @@
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
         .login-box {
@@ -90,7 +96,7 @@
 </head>
 <body>
 
-    <video autoplay muted loop playsinline id="bg-video">
+    <video muted loop playsinline id="bg-video" class="video-blurred">
         <source src="https://lecong12.github.io/daihoichibo.github.io/assets/video/codang_troixanh.mp4" type="video/mp4">
     </video>
 
@@ -177,12 +183,19 @@
 
     <script>
         const VALID_USER = "v2"; const VALID_PASS = "vu2";
+        const video = document.getElementById('bg-video');
+
         function showApp() {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
             document.body.style.background = "transparent";
+            
+            // Chạy video và xóa độ mờ khi đã đăng nhập
+            video.play();
+            video.classList.remove('video-blurred');
         }
+
         function checkPassword() {
             const user = document.getElementById('username-input').value;
             const pass = document.getElementById('password-input').value;
@@ -191,17 +204,29 @@
                 sessionStorage.setItem('isLoggedInV2', 'true');
             } else { alert("Sai thông tin đăng nhập!"); }
         }
-        function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
+
+        function logout() { 
+            sessionStorage.removeItem('isLoggedInV2'); 
+            location.reload(); 
+        }
+
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
-            const icon = element.querySelector('i:last-child');
             if (content.style.maxHeight && content.style.maxHeight !== "0px") {
                 content.style.maxHeight = "0px";
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
             }
         }
-        window.onload = function() { if (sessionStorage.getItem('isLoggedInV2') === 'true') showApp(); }
+
+        window.onload = function() { 
+            // Dừng video khi mới tải trang nếu chưa đăng nhập
+            if (sessionStorage.getItem('isLoggedInV2') === 'true') {
+                showApp();
+            } else {
+                video.pause();
+            }
+        }
     </script>
 </body>
 </html>
