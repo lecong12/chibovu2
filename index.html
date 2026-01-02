@@ -6,7 +6,7 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. VIDEO NỀN CỐ ĐỊNH - HIỂN THỊ XUYÊN SUỐT */
+        /* 1. VIDEO NỀN CỐ ĐỊNH */
         #bg-video {
             position: fixed; top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
@@ -20,14 +20,14 @@
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100%;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #4da4e0; /* Màu nền xanh dự phòng */
+            background: transparent;
             color: white; overflow-x: hidden;
         }
 
         /* 2. MÀN HÌNH ĐĂNG NHẬP */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(13, 71, 161, 0.2); 
+            background: rgba(0, 0, 0, 0.3);
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
@@ -45,10 +45,10 @@
             border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase;
         }
 
-        /* 3. GIAO DIỆN CHÍNH (TRONG SUỐT ĐỂ LỘ VIDEO) */
+        /* 3. GIAO DIỆN CHÍNH */
         .fixed-header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 20px 0;
-            text-align: center; background: rgba(0, 0, 0, 0.5);
+            text-align: center; background: rgba(0, 0, 0, 0.4);
         }
         .fixed-header h1 { font-size: 1.6rem; text-transform: uppercase; margin: 5px 0; font-weight: 800; letter-spacing: 2px; }
         .fixed-header .subtitle { color: #ffc107; font-size: 1.1rem; font-weight: bold; }
@@ -56,7 +56,6 @@
         #main-content {
             display: none; padding-top: 220px; padding-bottom: 60px;
             width: 100%; position: relative; z-index: 1;
-            background: transparent; /* Đảm bảo thấy video nền */
         }
         .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 
@@ -66,22 +65,39 @@
             border: 2px solid #ffc107; text-transform: uppercase; 
             font-size: 1.15rem; letter-spacing: 1px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .accordion-item {
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px; overflow: hidden; margin-bottom: 5px;
+            border-radius: 20px; overflow: hidden;
         }
         .accordion-header {
             padding: 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
             color: #ffc107; font-weight: bold; font-size: 1.15rem; text-transform: uppercase;
         }
-        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.5); }
-        .sub-link { display: block; padding: 18px 25px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; }
+        
+        /* BỎ NỀN TỐI TRONG MENU CON */
+        .accordion-content { 
+            max-height: 0; overflow: hidden; transition: 0.3s; 
+            background: transparent; /* Đã bỏ nền tối */
+        }
+        .sub-link { 
+            display: block; padding: 18px 25px; color: white; text-decoration: none; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; 
+        }
         .highlight { color: #ffc107 !important; font-weight: bold; }
 
-        .footer { text-align: center; padding: 60px 20px; font-size: 1.1rem; font-weight: bold; color: #ffc107; text-transform: uppercase; }
+        /* TÙY CHỈNH CHỮ FOOTER MỚI */
+        .footer { 
+            text-align: center; 
+            padding: 40px 20px; 
+            font-size: 0.85rem; /* Nhỏ hơn */
+            font-family: "Times New Roman", Times, serif; /* Kiểu chữ khác */
+            font-style: italic; /* Nghiêng cho trang trọng */
+            color: rgba(255, 255, 255, 0.7); /* Màu trắng mờ nhã nhặn */
+            letter-spacing: 1px;
+            text-transform: none; /* Không viết hoa toàn bộ */
+        }
     </style>
 </head>
 <body>
@@ -137,8 +153,6 @@
                 <div class="accordion-header" onclick="toggleAccordion(this)"><span>3. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i></div>
                 <div class="accordion-content">
                     <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
-                    <a href="#" class="sub-link">Nghị quyết Trung ương 4 (Khóa XIII)</a>
-                    <a href="#" class="sub-link">Kết luận số 01-KL/TW</a>
                 </div>
             </div>
 
@@ -161,7 +175,7 @@
                 </div>
             </div>
 
-            <footer class="footer">Ban chi ủy chi bộ vụ 2</footer>
+            <div class="footer">Ban chi uỷ chi bộ vụ 2</div>
         </nav>
     </div>
 
@@ -171,7 +185,7 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
-            document.body.style.background = "transparent"; /* Xóa màu nền xanh để lộ video */
+            document.body.style.background = "transparent";
         }
         function checkPassword() {
             const user = document.getElementById('username-input').value;
@@ -182,9 +196,7 @@
             }
         }
         function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
-        window.onload = function() { 
-            if (sessionStorage.getItem('isLoggedInV2') === 'true') { showApp(); }
-        }
+        window.onload = function() { if (sessionStorage.getItem('isLoggedInV2') === 'true') showApp(); }
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
             content.style.maxHeight = (content.style.maxHeight && content.style.maxHeight !== "0px") ? "0px" : content.scrollHeight + "px";
