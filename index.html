@@ -1,259 +1,206 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Đại hội Chi bộ Vụ Địa phương 2 lần thứ I, nhiệm kỳ 2025 - 2030</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chi bộ Vụ 2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* 1. VIDEO NỀN CỐ ĐỊNH */
+        #bg-video {
+            position: fixed; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            z-index: -1000;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            filter: brightness(0.6);
+        }
 
-    body {
-      font-family: "Arial", sans-serif;
-      /* Đổi màu nền body từ #333 sang màu xanh đậm để tiệp màu với main-content, tránh lộ khoảng đen */
-      background-color: #051da3; 
-	    color: yellow;
-    }
+        body, html {
+            margin: 0; padding: 0; width: 100%; min-height: 100%;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: transparent;
+            color: white; overflow-x: hidden;
+        }
 
-    /* Hero Section */
-	.font-gold {
-		background: linear-gradient(to right, #C49842 0%, #B1803C 15%, #F7DE7D 33%, #BD8E40 48%, #F7DE7D 68%, #CA9F43 82%, #F7DE7D 92%, #CA9F43 100%);
-		background-clip: text;
-    -webkit-background-clip: text;
-		color: transparent;
-	}
-	
-    .hero-section {
-      position: relative;
-      height: 70vh;
-      overflow: hidden;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      padding-top: 20px;
-      padding-bottom: 20px;
-    }
+        /* 2. MÀN HÌNH ĐĂNG NHẬP */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        }
+        .login-box {
+            background: rgba(255, 255, 255, 0.4); padding: 40px 25px; border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5); text-align: center; width: 85%; max-width: 300px;
+        }
+        .login-box h2 { color: #0d47a1; font-size: 1.4rem; margin-bottom: 25px; text-transform: uppercase; font-weight: bold; }
+        .login-box input {
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px;
+            border: none; outline: none; text-align: center; font-size: 1.1rem;
+        }
+        .btn-login-submit {
+            background: #0d47a1; color: white; border: none; padding: 15px; margin-top: 15px;
+            border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase;
+        }
 
-    .background-video {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -2;
-    }
+        /* 3. GIAO DIỆN CHÍNH */
+        .fixed-header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 20px 0;
+            text-align: center; background: rgba(0, 0, 0, 0.4);
+        }
+        .fixed-header h1 { font-size: 1.6rem; text-transform: uppercase; margin: 5px 0; font-weight: 800; letter-spacing: 2px; }
+        .fixed-header .subtitle { color: #ffc107; font-size: 1.1rem; font-weight: bold; }
 
-    /* SỬA TẠI ĐÂY: Làm lớp phủ trong suốt hơn, chỉ chuyển màu nhẹ ở phần đáy */
-    .overlay-gradient {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 100%; /* Phủ toàn bộ để tạo chiều sâu */
-      background: linear-gradient(to bottom, 
-          rgba(0, 0, 0, 0.2) 0%, 
-          rgba(0, 0, 0, 0) 50%, 
-          #3a9bfb 100%); /* Chỉ đổ màu xanh đậm dần ở dưới cùng */
-      z-index: -1;
-    }
+        #main-content {
+            display: none; padding-top: 220px; padding-bottom: 60px;
+            width: 100%; position: relative; z-index: 1;
+        }
+        .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 
-    .hero-content {
-      z-index: 1;
-      padding: 10px;
-    }
+        .menu-btn {
+            background: rgba(255, 255, 255, 0.15); color: white; text-decoration: none; 
+            padding: 22px 15px; border-radius: 50px; font-weight: bold; text-align: center;
+            border: 2px solid #ffc107; text-transform: uppercase; 
+            font-size: 1.15rem; letter-spacing: 1px;
+            display: flex; align-items: center; justify-content: center;
+        }
 
-    .hero-content h1 {
-      font-size: 3.5rem;
-      font-weight: bold;
-	    text-shadow: 2px 2px 8px rgba(0,0,0,0.8); /* Tăng độ bóng để chữ vàng nổi bật trên nền trong suốt */
-    }
-	
-	.logo {
-		width: 200px;
-	}
-    .hero-content h3 {
-      font-size: 2.5rem;
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-    }
+        .accordion-item {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px; overflow: hidden;
+        }
+        .accordion-header {
+            padding: 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            color: #ffc107; font-weight: bold; font-size: 1.15rem; text-transform: uppercase;
+        }
+        
+        /* BỎ NỀN TỐI TRONG MENU CON */
+        .accordion-content { 
+            max-height: 0; overflow: hidden; transition: 0.3s; 
+            background: transparent; /* Đã bỏ nền tối */
+        }
+        .sub-link { 
+            display: block; padding: 18px 25px; color: white; text-decoration: none; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; 
+        }
+        .highlight { color: #ffc107 !important; font-weight: bold; }
 
-    /* Tài liệu Section */
-    .tai-lieu-section {
-      color: #051da3;
-      padding: 30px 20px;
-      text-align: center;
-      transition: background-color 0.5s ease;
-    }
-
-    .tai-lieu-section h2 {
-	  margin-top: 60px;
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 30px;
-	  background: linear-gradient(to right, #C49842 0%, #B1803C 15%, #F7DE7D 33%, #BD8E40 48%, #F7DE7D 68%, #CA9F43 82%, #F7DE7D 92%, #CA9F43 100%);
-	  background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    }
-
-    .tai-lieu-list {
-	  max-width: 1380px;
-	  margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
-	
-	.tai-lieu-item {
-	  flex: 1 1 200px;
-      padding: 25px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 20px;
-      color: #051da3;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-	  max-width:260px;
-	  justify-content: space-around;
-      background: url(assets/images/3.png) no-repeat center top;
-      background-size: 325%;
-    }
-
-    .tai-lieu-item:hover {
-      transform: translateY(-5px);
-    }
-
-    /* Văn kiện Section */
-    .van-kien-section {
-      color: #051da3;
-      padding: 60px 20px 80px;
-      text-align: center;
-    }
-
-    .van-kien-section h2 {
-      font-size: 45px;
-	  font-weight: bold;
-	  margin-bottom: 40px;
-	  background: linear-gradient(to right, #C49842 0%, #B1803C 15%, #F7DE7D 33%, #BD8E40 48%, #F7DE7D 68%, #CA9F43 82%, #F7DE7D 92%, #CA9F43 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    }
-
-    .van-kien-section .content {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .van-kien-section .content .item {
-		font-size: 20px;
-		background-size: 135% !important;
-		background: url(assets/images/3.png) no-repeat center top;
-		color: #051da3;
-		font-weight: bold;
-		padding: 45px;
-		border-radius: 10px;
-		max-width: 380px;
-		flex: 1 1 200px;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-		cursor: pointer;
-        text-decoration: none;
-    }
-	
-	.main-content {
-	  background-color: #3a9bfb;
-	  background-image: url(assets/images/blue-bg-4.4.png);
-	  background-blend-mode: screen;
-	  background-position: center;
-	}
-
-    @media (max-width: 768px) {
-      .hero-content h1 { font-size: 1.8rem; }
-	  .hero-content h3 { font-size: 1.3rem; }
-	  .logo { width: 100px; }
-      .van-kien-section h2 { font-size: 2rem; }
-	  .tai-lieu-item, .van-kien-section .content .item { min-width: 100%; }
-	  .main-content { background-size: 149%; }
-    }
-	@media(min-width: 800px) {
-		.van-kien-section .content .item { background-size: 480% !important; }
-		.main-content { background-size: 87%; }
-	}
-  </style>
+        /* TÙY CHỈNH CHỮ FOOTER MỚI */
+        .footer { 
+            text-align: center; 
+            padding: 40px 20px; 
+            font-size: 0.85rem; /* Nhỏ hơn */
+            font-family: "Times New Roman", Times, serif; /* Kiểu chữ khác */
+            font-style: italic; /* Nghiêng cho trang trọng */
+            color: rgba(255, 255, 255, 0.7); /* Màu trắng mờ nhã nhặn */
+            letter-spacing: 1px;
+            text-transform: none; /* Không viết hoa toàn bộ */
+        }
+    </style>
 </head>
-
 <body>
-  <section class="hero-section">
-    <img id="placeholder" class="background-video" src="assets/images/bgdoan.png"/>
-    <video id="backgroundVideo" autoplay muted loop playsinline class="background-video" style="display: none;"></video>
-    <div class="overlay-gradient"></div>
-    <div class="hero-content">
-      <h1>ĐẠI HỘI CHI BỘ<br>VỤ ĐỊA PHƯƠNG 2 <br> BAN TUYÊN GIÁO VÀ DÂN VẬN TRUNG ƯƠNG</h1>
-      <h3>LẦN THỨ I, NHIỆM KỲ 2025 - 2030</h3>
+
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="https://lecong12.github.io/daihoichibo.github.io/assets/video/codang_troixanh.mp4" type="video/mp4">
+    </video>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="80">
+            <h2>Chi bộ Vụ 2</h2>
+            <input type="text" id="username-input" placeholder="Tên đăng nhập">
+            <input type="password" id="password-input" placeholder="Mật khẩu">
+            <button class="btn-login-submit" onclick="checkPassword()">Đăng nhập</button>
+        </div>
     </div>
-  </section>
 
-  <div class="main-content">
-    <section class="van-kien-section">
-      <h2>VĂN KIỆN ĐẠI HỘI</h2>
-      <div class="content">
-        <a class="item" href="assets/file/Báo_cáo_chính_trị_Đại_Hội_0001.pdf" target="_blank">BÁO CÁO CHÍNH TRỊ</a>
-        <a class="item" href="assets/file/Báo_cáo_kiểm_điểm_của_BCH_0001.pdf" target="_blank">BÁO CÁO KIỂM ĐIỂM</a>
-        <a class="item" href="assets/file/Dự_thảo_nghị_quyết_0001.pdf" target="_blank">DỰ THẢO NGHỊ QUYẾT</a>
-      </div>
-    </section>
+    <header id="header-fixed" class="fixed-header" style="display:none;">
+        <div style="position: absolute; top: 15px; right: 15px; background: #0d47a1; padding: 5px 12px; border-radius: 8px; font-size: 0.8rem;" onclick="logout()">Thoát</div>
+        <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="70">
+        <h1>Chi bộ Vụ 2</h1>
+        <div class="subtitle">Tài liệu số nội bộ</div>
+    </header>
 
-    <section class="tai-lieu-section">
-      <img src="assets/images/logovnpt.png" alt="VNPT" style="max-height: 21px; position: absolute; left: 15px; margin-top: 10px; cursor: pointer;" onclick="openUrl('https://vnpt.com.vn/')">
-      <h2>TÀI LIỆU ĐẠI HỘI</h2>
-      <div class="tai-lieu-list">
-        <a class="tai-lieu-item" href="assets/file/Chương_trình_chuẩn_0001.pdf" target="_blank">CHƯƠNG TRÌNH ĐẠI HỘI</a>
-        <a class="tai-lieu-item" href="assets/file/Nội quy_0001.pdf" target="_blank">NỘI QUY ĐẠI HỘI</a>
-        <a class="tai-lieu-item" href="assets/file/Quy_chế_0001.pdf" target="_blank">QUY CHẾ ĐẠI HỘI</a>
-        <a class="tai-lieu-item" href="assets/file/Diễn_văn_khai_mạc.pdf" target="_blank">DIỄN VĂN KHAI MẠC</a>
-        <a class="tai-lieu-item" href="assets/file/Diễn _văn_bế_mạc.pdf" target="_blank">DIỄN VĂN BẾ MẠC</a>
-      </div>
-    </section>
-  </div>
+    <div id="main-content">
+        <nav class="menu-list">
+            <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn"><i class="fas fa-file-pdf"></i> Báo cáo chính trị</a>
+            <a href="assets/file/nghi_quyet.pdf" target="_blank" class="menu-btn"><i class="fas fa-file-signature"></i> Dự thảo Nghị quyết</a>
 
-  <footer style="background: #8B0000; text-align: center; padding: 15px; color: #FFD700; border-top: 4px solid #FFD700; background-image: url(assets/images/footervnpt.png); background-size: cover;">
-      <h2 style="font-size: 15px; font-weight: bold; line-height: 1.4; margin: 0; padding-bottom: 5px;">CHÀO MỪNG ĐẠI HỘI CHI BỘ VỤ ĐỊA PHƯƠNG 2!</h2>
-      <div style="display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 10px; color: white; cursor: pointer;" onclick="openUrl('https://vnpt.com.vn/')">
-        <img src="assets/images/logobtgdvtw.png" alt="BTGDVTW" style="max-height: 21px;">
-        <h2 style="margin: 0;">Đổi mới sáng tạo, chuyển đổi số toàn diện</h2>
-      </div>
-  </footer>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>1. Báo cáo Chi bộ</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/bc_thang1.pdf" class="sub-link">Báo cáo tháng 1</a>
+                    <a href="assets/file/bc_thang2.pdf" class="sub-link">Báo cáo tháng 2</a>
+                    <a href="assets/file/bc_thang3.pdf" class="sub-link">Báo cáo tháng 3</a>
+                    <a href="assets/file/bc_6thang.pdf" class="sub-link highlight">Báo cáo sơ kết 6 tháng</a>
+                    <a href="assets/file/bc_thang10.pdf" class="sub-link">Báo cáo tháng 10</a>
+                    <a href="assets/file/bc_thang11.pdf" class="sub-link">Báo cáo tháng 11</a>
+                    <a href="assets/file/bc_nam.pdf" class="sub-link highlight">Báo cáo tổng kết năm</a>
+                </div>
+            </div>
 
-  <script>
-    window.addEventListener('load', function () {
-      const video = document.getElementById('backgroundVideo'); 
-      const placeholder = document.getElementById('placeholder');
-      const source = document.createElement('source');
-      source.src = "assets/video/codang_troixanh.mp4";
-      source.type = "video/mp4";
-      video.appendChild(source);
-      video.addEventListener('canplay', function () {
-        video.style.display = 'block';
-        video.play().catch(()=>{});
-        placeholder.style.display = 'none';
-      });
-    });
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>2. Văn bản Đảng ủy</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/nghi_quyet_du.pdf" class="sub-link">Nghị quyết Đảng ủy</a>
+                    <a href="assets/file/huong_dan.pdf" class="sub-link">Hướng dẫn thực hiện</a>
+                </div>
+            </div>
 
-    function openUrl(url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
-  </script>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>3. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>4. Biên bản họp Chi bộ</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/bb_thang1.pdf" class="sub-link">Biên bản tháng 1</a>
+                    <a href="assets/file/bb_thang2.pdf" class="sub-link">Biên bản tháng 2</a>
+                    <a href="assets/file/bb_thang3.pdf" class="sub-link">Biên bản tháng 3</a>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>5. Sinh hoạt chuyên đề 2025</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/chuyen_de_q1.pdf" class="sub-link">Chuyên đề Quý I</a>
+                    <a href="assets/file/chuyen_de_q2.pdf" class="sub-link">Chuyên đề Quý II</a>
+                    <a href="assets/file/chuyen_de_q3.pdf" class="sub-link">Chuyên đề Quý III</a>
+                    <a href="assets/file/chuyen_de_q4.pdf" class="sub-link">Chuyên đề Quý IV</a>
+                </div>
+            </div>
+
+            <div class="footer">Ban chi uỷ chi bộ vụ 2</div>
+        </nav>
+    </div>
+
+    <script>
+        const VALID_USER = "v2"; const VALID_PASS = "vu2";
+        function showApp() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('header-fixed').style.display = 'block';
+            document.getElementById('main-content').style.display = 'block';
+            document.body.style.background = "transparent";
+        }
+        function checkPassword() {
+            const user = document.getElementById('username-input').value;
+            const pass = document.getElementById('password-input').value;
+            if (user === VALID_USER && pass === VALID_PASS) {
+                showApp();
+                sessionStorage.setItem('isLoggedInV2', 'true');
+            }
+        }
+        function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
+        window.onload = function() { if (sessionStorage.getItem('isLoggedInV2') === 'true') showApp(); }
+        function toggleAccordion(element) {
+            const content = element.nextElementSibling;
+            content.style.maxHeight = (content.style.maxHeight && content.style.maxHeight !== "0px") ? "0px" : content.scrollHeight + "px";
+        }
+    </script>
 </body>
 </html>
