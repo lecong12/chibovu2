@@ -6,7 +6,7 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. VIDEO NỀN PHỦ KÍN (DÙNG OBJECT-FIT: COVER ĐỂ KHÔNG BỊ TRỐNG DỌC) */
+        /* 1. VIDEO NỀN PHỦ KÍN - LUÔN LUÔN HIỂN THỊ */
         #bg-video {
             position: fixed; top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
@@ -14,30 +14,28 @@
             z-index: -1000;
             transform: translate(-50%, -50%);
             object-fit: cover;
-            filter: brightness(0.6); /* Giảm độ sáng video một chút để nổi bật chữ */
+            filter: brightness(0.6);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100%;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: transparent; /* Đảm bảo body không có màu nền che video */
             color: white; overflow-x: hidden;
         }
 
-        /* 2. HEADER SÁNG VÀ NHẠT (THEO YÊU CẦU CỦA BẠN) */
+        /* 2. HEADER SÁNG VÀ NHẠT (BLUR) */
         .fixed-header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; 
             padding: 15px 0; text-align: center;
-            /* background rgba 0.15 là rất nhạt, giúp nhìn xuyên qua video rõ hơn */
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(10px); /* Hiệu ứng kính mờ sang trọng */
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.15); /* Sáng và nhạt */
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .fixed-header h1 { font-size: 1.4rem; text-transform: uppercase; margin: 5px 0; font-weight: 800; letter-spacing: 1px; }
-        .fixed-header .subtitle { color: #ffc107; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; }
+        .fixed-header h1 { font-size: 1.4rem; text-transform: uppercase; margin: 5px 0; font-weight: 800; }
+        .fixed-header .subtitle { color: #ffc107; font-size: 0.9rem; font-weight: bold; }
 
-        /* 3. MÀN HÌNH ĐĂNG NHẬP TRONG SUỐT */
+        /* 3. MÀN HÌNH ĐĂNG NHẬP */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -49,32 +47,30 @@
             border: 1px solid rgba(255, 255, 255, 0.2); text-align: center; width: 85%; max-width: 320px;
         }
         .login-box input {
-            width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px; border: none; 
-            outline: none; text-align: center; font-size: 1rem; box-sizing: border-box;
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px; border: none; text-align: center;
         }
         .btn-login-submit {
             background: #ffc107; color: #0d47a1; border: none; padding: 15px; margin-top: 15px;
-            border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase; cursor: pointer;
+            border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase;
         }
 
-        /* 4. NỘI DUNG CHÍNH CUỘN DƯỚI HEADER */
+        /* 4. NỘI DUNG CHÍNH */
         #main-content {
-            display: none; padding-top: 180px; padding-bottom: 80px;
+            display: none; padding-top: 180px; padding-bottom: 60px;
             width: 100%; position: relative; z-index: 1;
         }
         .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
 
-        /* PHONG CÁCH NÚT VÀ ACCORDION */
         .menu-btn, .accordion-item {
             background: rgba(255, 255, 255, 0.1); border: 1.5px solid #ffc107;
             border-radius: 15px; overflow: hidden; backdrop-filter: blur(5px);
         }
-        .menu-btn { padding: 18px; font-weight: bold; text-align: center; text-transform: uppercase; color: white; text-decoration: none; display: block; }
-        .accordion-header { padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: #ffc107; font-weight: bold; text-transform: uppercase; }
-        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; background: rgba(0,0,0,0.2); }
-        .sub-link { display: block; padding: 15px 25px; color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.95rem; }
+        .menu-btn { padding: 20px; font-weight: bold; text-align: center; text-transform: uppercase; color: white; text-decoration: none; display: block; }
+        .accordion-header { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: #ffc107; font-weight: bold; text-transform: uppercase; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s ease-out; }
+        .sub-link { display: block; padding: 15px 25px; color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.1); }
 
-        .footer { text-align: center; padding: 30px 20px; font-size: 0.8rem; font-style: italic; color: rgba(255, 255, 255, 0.6); }
+        .footer { text-align: center; padding: 30px 20px; font-size: 0.8rem; font-style: italic; color: rgba(255, 255, 255, 0.7); }
     </style>
 </head>
 <body>
@@ -86,7 +82,7 @@
     <div id="login-overlay">
         <div class="login-box">
             <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="80">
-            <h2 style="margin: 15px 0; font-size: 1.2rem;">CHI BỘ VỤ 2</h2>
+            <h2 style="margin: 15px 0;">CHI BỘ VỤ 2</h2>
             <input type="text" id="username-input" placeholder="Tên đăng nhập">
             <input type="password" id="password-input" placeholder="Mật khẩu">
             <button class="btn-login-submit" onclick="checkPassword()">Đăng nhập</button>
@@ -96,8 +92,8 @@
     <header id="header-fixed" class="fixed-header" style="display:none;">
         <div style="position: absolute; top: 12px; right: 12px; background: #0d47a1; padding: 4px 10px; border-radius: 5px; font-size: 0.7rem;" onclick="logout()">Thoát</div>
         <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="55">
-        <h1>Chi bộ Vụ 2</h1>
-        <div class="subtitle">Tài liệu số nội bộ</div>
+        <h1>CHI BỘ VỤ 2</h1>
+        <div class="subtitle">TÀI LIỆU SỐ NỘI BỘ</div>
     </header>
 
     <div id="main-content">
@@ -126,15 +122,23 @@
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)"><span>3. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i></div>
                 <div class="accordion-content">
-                    <a href="assets/file/kltw221.pdf" class="sub-link">Kết luận 221-KL/TW</a>
-                    <a href="assets/file/nq_tw.pdf" class="sub-link">Các Nghị quyết TW khác</a>
+                    <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
+                    <a href="assets/file/nq_tw.pdf" class="sub-link">Các văn bản TW khác</a>
                 </div>
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>4. Biên bản họp</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>4. Biên bản họp Chi bộ</span><i class="fas fa-chevron-down"></i></div>
                 <div class="accordion-content">
-                    <a href="assets/file/bb_hop_cb.pdf" class="sub-link">Biên bản họp Chi bộ định kỳ</a>
+                    <a href="assets/file/bb_hop_cb.pdf" class="sub-link">Biên bản họp định kỳ</a>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>5. Sinh hoạt chuyên đề</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/chuyen_de_1.pdf" class="sub-link">Chuyên đề Quý I</a>
+                    <a href="assets/file/chuyen_de_2.pdf" class="sub-link">Chuyên đề Quý II</a>
                 </div>
             </div>
 
@@ -149,6 +153,8 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
+            // Đảm bảo body không có màu nền khi đăng nhập xong
+            document.body.style.background = "transparent";
         }
 
         function checkPassword() {
@@ -157,32 +163,18 @@
             if (user === VALID_USER && pass === VALID_PASS) {
                 showApp();
                 sessionStorage.setItem('isLoggedInV2', 'true');
-            } else {
-                alert("Thông tin đăng nhập không đúng!");
-            }
+            } else { alert("Sai thông tin!"); }
         }
 
-        function logout() {
-            sessionStorage.removeItem('isLoggedInV2');
-            location.reload();
-        }
+        function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
 
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
-            const icon = element.querySelector('i');
-            if (content.style.maxHeight && content.style.maxHeight !== "0px") {
-                content.style.maxHeight = "0px";
-                icon.style.transform = "rotate(0deg)";
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-                icon.style.transform = "rotate(180deg)";
-            }
+            content.style.maxHeight = (content.style.maxHeight && content.style.maxHeight !== "0px") ? "0px" : content.scrollHeight + "px";
         }
 
         window.onload = function() {
-            if (sessionStorage.getItem('isLoggedInV2') === 'true') {
-                showApp();
-            }
+            if (sessionStorage.getItem('isLoggedInV2') === 'true') showApp();
         }
     </script>
 </body>
