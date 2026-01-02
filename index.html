@@ -10,78 +10,80 @@
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #4da4e0; /* Màu xanh bầu trời chủ đạo */
-            color: white; overflow-x: hidden;
+            background-color: #4da4e0; /* Màu bầu trời chủ đạo */
+            color: white;
         }
 
-        /* 2. VIDEO GIỮ NGUYÊN TỈ LỆ Ở GIỮA */
-        .video-wrapper {
+        /* 2. VIDEO NỀN - NẰM GIỮA MÀN HÌNH, DƯỚI CÙNG */
+        .video-fixed-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1000; display: flex; align-items: center; justify-content: center;
+            z-index: -2; display: flex; align-items: center; justify-content: center;
+            background-color: #4da4e0;
         }
         #bg-video {
-            width: 100%; height: auto; /* Giữ nguyên tỉ lệ ngang */
-            object-fit: contain; filter: brightness(0.6);
+            width: 100%; height: auto; 
+            object-fit: contain; filter: brightness(0.7);
         }
 
-        /* 3. HEADER & FOOTER VỚI ẢNH NỀN MÀU TRỜI */
+        /* 3. HEADER CỐ ĐỊNH - LỚP CAO NHẤT (z-index: 100) */
         .fixed-header {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-            padding: 30px 0; text-align: center;
-            /* Thay ảnh nền trời của bạn vào đây */
+            position: fixed; top: 0; left: 0; width: 100%; height: 160px;
+            z-index: 100; text-align: center;
             background: url('assets/images/sky_top.jpg') no-repeat center bottom;
             background-size: cover;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        .footer { 
-            text-align: center; padding: 30px 20px;
+        /* 4. VÙNG CUỘN NỘI DUNG - NẰM GIỮA HEADER VÀ VIDEO */
+        #main-content {
+            display: none;
+            position: relative;
+            z-index: 10; /* Cao hơn video nhưng thấp hơn Header */
+            padding-top: 180px; /* Cách Header ra để không bị đè lúc đầu */
+            padding-bottom: 20px;
+        }
+
+        .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* CÁC NÚT BẤM VÀ KHUNG MENU */
+        .menu-btn, .accordion-item {
+            background: rgba(255, 255, 255, 0.15); 
+            border: 1.5px solid #ffc107;
+            border-radius: 15px; overflow: hidden;
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+        }
+        .menu-btn { padding: 20px; font-weight: bold; text-align: center; text-transform: uppercase; color: white; text-decoration: none; display: block; }
+        .accordion-header { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; color: #ffc107; font-weight: bold; text-transform: uppercase; }
+        .sub-link { display: block; padding: 15px 25px; color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.1); }
+
+        /* FOOTER NẰM TRONG VÙNG CUỘN */
+        .footer-area {
+            margin-top: 30px; padding: 40px 20px; text-align: center;
             background: url('assets/images/sky_bottom.jpg') no-repeat center top;
             background-size: cover;
             font-size: 0.85rem; font-family: "Times New Roman", Times, serif;
             font-style: italic; color: rgba(255, 255, 255, 0.9);
-            margin-top: 20px;
         }
 
-        /* 4. MÀN HÌNH ĐĂNG NHẬP TRONG SUỐT */
+        /* 5. MÀN HÌNH ĐĂNG NHẬP */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(77, 164, 224, 0.4); /* Màu trời mờ */
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            background: rgba(77, 164, 224, 0.6);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
         .login-box {
             background: rgba(255, 255, 255, 0.2); padding: 40px 25px; border-radius: 25px;
             border: 1px solid rgba(255, 255, 255, 0.3); text-align: center; width: 85%; max-width: 300px;
         }
-        .login-box input {
-            width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px; border: none; outline: none; text-align: center;
-        }
-        .btn-login-submit {
-            background: #ffc107; color: #0d47a1; border: none; padding: 15px; margin-top: 15px;
-            border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase;
-        }
-
-        /* 5. NỘI DUNG CHÍNH */
-        #main-content {
-            display: none; padding-top: 180px; padding-bottom: 20px;
-            width: 100%; position: relative; z-index: 1;
-        }
-        .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-        
-        .menu-btn, .accordion-item {
-            background: rgba(255, 255, 255, 0.1); border: 1.5px solid #ffc107;
-            border-radius: 15px; overflow: hidden; color: white; text-decoration: none;
-            backdrop-filter: blur(5px);
-        }
-        .menu-btn { padding: 20px; font-weight: bold; text-align: center; text-transform: uppercase; display: block; }
-        .accordion-header { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; color: #ffc107; font-weight: bold; text-transform: uppercase; }
-        .sub-link { display: block; padding: 15px 25px; color: white; text-decoration: none; border-top: 1px solid rgba(255,255,255,0.1); }
+        .login-box input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px; border: none; outline: none; text-align: center; }
+        .btn-login-submit { background: #ffc107; color: #0d47a1; border: none; padding: 15px; margin-top: 15px; border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="video-wrapper">
+    <div class="video-fixed-bg">
         <video autoplay muted loop playsinline id="bg-video">
             <source src="https://lecong12.github.io/daihoichibo.github.io/assets/video/codang_troixanh.mp4" type="video/mp4">
         </video>
@@ -90,7 +92,7 @@
     <div id="login-overlay">
         <div class="login-box">
             <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="70">
-            <h2 style="font-size: 1.3rem;">CHI BỘ VỤ 2</h2>
+            <h2 style="margin-top:15px; font-size: 1.3rem;">CHI BỘ VỤ 2</h2>
             <input type="text" id="username-input" placeholder="Tên đăng nhập">
             <input type="password" id="password-input" placeholder="Mật khẩu">
             <button class="btn-login-submit" onclick="checkPassword()">Đăng nhập</button>
@@ -98,9 +100,10 @@
     </div>
 
     <header id="header-fixed" class="fixed-header" style="display:none;">
+        <div style="position: absolute; top: 10px; right: 10px; background: rgba(13,71,161,0.8); padding: 5px 10px; border-radius: 5px; font-size: 0.7rem;" onclick="logout()">Thoát</div>
         <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="60">
-        <h1 style="font-size: 1.4rem; margin: 5px 0;">CHI BỘ VỤ 2</h1>
-        <div style="color: #ffc107; font-weight: bold; font-size: 0.9rem;">Hệ thống tài liệu số</div>
+        <h1 style="font-size: 1.3rem; margin: 5px 0;">CHI BỘ VỤ 2</h1>
+        <div style="color: #ffc107; font-weight: bold; font-size: 0.85rem;">Hệ thống tài liệu số</div>
     </header>
 
     <div id="main-content">
@@ -112,8 +115,8 @@
                 <div class="accordion-header" onclick="toggleAccordion(this)"><span>1. Báo cáo Chi bộ</span><i class="fas fa-chevron-down"></i></div>
                 <div class="accordion-content" style="max-height: 0; overflow: hidden; transition: 0.3s;">
                     <a href="assets/file/bc_thang1.pdf" class="sub-link">Báo cáo tháng 1</a>
-                    <a href="assets/file/bc_6thang.pdf" class="sub-link">Báo cáo sơ kết 6 tháng</a>
-                    <a href="assets/file/bc_nam.pdf" class="sub-link">Báo cáo tổng kết năm</a>
+                    <a href="assets/file/bc_6thang.pdf" class="sub-link" style="color:#ffc107;">Báo cáo sơ kết 6 tháng</a>
+                    <a href="assets/file/bc_nam.pdf" class="sub-link" style="color:#ffc107;">Báo cáo tổng kết năm</a>
                 </div>
             </div>
 
@@ -124,7 +127,7 @@
                 </div>
             </div>
 
-            <footer class="footer">Ban chi uỷ chi bộ vụ 2</footer>
+            <div class="footer-area">Ban chi uỷ chi bộ vụ 2</div>
         </nav>
     </div>
 
@@ -132,7 +135,7 @@
         const VALID_USER = "v2"; const VALID_PASS = "vu2";
         function showApp() {
             document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('header-fixed').style.display = 'block';
+            document.getElementById('header-fixed').style.display = 'flex';
             document.getElementById('main-content').style.display = 'block';
         }
         function checkPassword() {
@@ -143,6 +146,7 @@
                 sessionStorage.setItem('isLoggedInV2', 'true');
             }
         }
+        function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
             content.style.maxHeight = (content.style.maxHeight && content.style.maxHeight !== "0px") ? "0px" : content.scrollHeight + "px";
