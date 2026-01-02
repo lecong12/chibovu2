@@ -6,7 +6,7 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. VIDEO NỀN CỐ ĐỊNH */
+        /* 1. VIDEO NỀN CỐ ĐỊNH - HIỂN THỊ XUYÊN SUỐT */
         #bg-video {
             position: fixed; top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
@@ -14,7 +14,7 @@
             z-index: -1000;
             transform: translate(-50%, -50%);
             object-fit: cover;
-            filter: brightness(0.55);
+            filter: brightness(0.5);
         }
 
         body, html {
@@ -24,37 +24,33 @@
             color: white; overflow-x: hidden;
         }
 
-        /* 2. MÀN HÌNH ĐĂNG NHẬP - SỬ DỤNG ẢNH NỀN TỪ REPO */
+        /* 2. MÀN HÌNH ĐĂNG NHẬP - SỬ DỤNG ẢNH NỀN TỪ THƯ MỤC IMAGES */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background-image: url('assets/images/background_login.jpg'); /* ĐƯỜNG DẪN ẢNH NỀN */
+            background: url('assets/images/background.jpg') no-repeat center center;
             background-size: cover;
-            background-position: center;
-        }
-        #login-overlay::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(13, 71, 161, 0.4); backdrop-filter: blur(10px); z-index: -1;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         .login-box {
             background: rgba(255, 255, 255, 0.25); padding: 40px 25px; border-radius: 25px;
             border: 1px solid rgba(255, 255, 255, 0.4); text-align: center; width: 85%; max-width: 300px;
         }
-        .login-box h2 { color: #ffffff; font-size: 1.4rem; margin-bottom: 25px; text-transform: uppercase; font-weight: bold; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .login-box h2 { color: white; font-size: 1.4rem; margin-bottom: 25px; text-transform: uppercase; font-weight: bold; }
         .login-box input {
             width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px;
-            border: none; outline: none; text-align: center; font-size: 1.1rem; background: rgba(255,255,255,0.9);
+            border: none; outline: none; text-align: center; font-size: 1.1rem;
         }
         .btn-login-submit {
             background: #ffc107; color: #0d47a1; border: none; padding: 15px; margin-top: 15px;
-            border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase; font-size: 1.1rem;
+            border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase;
         }
 
-        /* 3. GIAO DIỆN CHÍNH */
+        /* 3. GIAO DIỆN CHÍNH - TRONG SUỐT HOÀN TOÀN */
         .fixed-header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 20px 0;
             text-align: center; background: rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid rgba(255,215,0,0.3);
         }
         .fixed-header h1 { font-size: 1.6rem; text-transform: uppercase; margin: 5px 0; font-weight: 800; letter-spacing: 2px; }
         .fixed-header .subtitle { color: #ffc107; font-size: 1.1rem; font-weight: bold; }
@@ -65,44 +61,35 @@
         }
         .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 
-        /* NÚT BẤM SỬ DỤNG ẢNH NỀN NHẸ */
+        /* NÚT BẤM VÀ MENU KHÔNG DÙNG ẢNH NỀN */
         .menu-btn {
-            background-image: linear-gradient(rgba(13, 71, 161, 0.6), rgba(13, 71, 161, 0.6)), url('assets/images/button_bg.jpg');
-            background-size: cover;
-            color: white; text-decoration: none; 
+            background: rgba(255, 255, 255, 0.15); color: white; text-decoration: none; 
             padding: 22px 15px; border-radius: 50px; font-weight: bold; text-align: center;
-            border: 1.5px solid #ffc107; text-transform: uppercase; 
+            border: 2px solid #ffc107; text-transform: uppercase; 
             font-size: 1.15rem; letter-spacing: 1px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        /* ACCORDION CÓ ẢNH NỀN */
         .accordion-item {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)), url('assets/images/menu_bg.jpg');
-            background-size: cover;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px; overflow: hidden;
-            backdrop-filter: blur(5px);
         }
         .accordion-header {
             padding: 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
             color: #ffc107; font-weight: bold; font-size: 1.15rem; text-transform: uppercase;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
-        
         .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: transparent; }
+        
         .sub-link { 
             display: block; padding: 18px 25px; color: white; text-decoration: none; 
-            border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem;
-            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; 
         }
-        .highlight { color: #ffc107 !important; font-weight: bold; }
 
+        /* FOOTER KIỂU MỚI TÀI LIỆU YÊU CẦU */
         .footer { 
             text-align: center; padding: 40px 20px; 
             font-size: 0.85rem; font-family: "Times New Roman", Times, serif;
-            font-style: italic; color: rgba(255, 255, 255, 0.8);
+            font-style: italic; color: rgba(255, 255, 255, 0.7);
             letter-spacing: 1px;
         }
     </style>
@@ -139,8 +126,8 @@
                 <div class="accordion-header" onclick="toggleAccordion(this)"><span>1. Báo cáo Chi bộ</span><i class="fas fa-chevron-down"></i></div>
                 <div class="accordion-content">
                     <a href="assets/file/bc_thang1.pdf" class="sub-link">Báo cáo tháng 1</a>
-                    <a href="assets/file/bc_6thang.pdf" class="sub-link highlight">Báo cáo sơ kết 6 tháng</a>
-                    <a href="assets/file/bc_nam.pdf" class="sub-link highlight">Báo cáo tổng kết năm</a>
+                    <a href="assets/file/bc_6thang.pdf" class="sub-link" style="color:#ffc107; font-weight:bold;">Báo cáo sơ kết 6 tháng</a>
+                    <a href="assets/file/bc_nam.pdf" class="sub-link" style="color:#ffc107; font-weight:bold;">Báo cáo tổng kết năm</a>
                 </div>
             </div>
 
@@ -183,7 +170,6 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
-            document.body.style.background = "transparent";
         }
         function checkPassword() {
             const user = document.getElementById('username-input').value;
