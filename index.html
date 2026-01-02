@@ -6,7 +6,7 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. VIDEO NỀN XUYÊN SUỐT - LUÔN HIỂN THỊ */
+        /* 1. VIDEO NỀN CỐ ĐỊNH - HIỂN THỊ XUYÊN SUỐT */
         #bg-video {
             position: fixed; top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
@@ -15,22 +15,21 @@
             transform: translate(-50%, -50%);
             object-fit: cover;
             filter: brightness(0.6);
-            background: #4da4e0; /* Màu dự phòng nếu video lỗi */
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100%;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: transparent; /* QUAN TRỌNG: Để lộ video phía dưới */
+            background: #4da4e0; /* Màu nền xanh dự phòng */
             color: white; overflow-x: hidden;
         }
 
         /* 2. MÀN HÌNH ĐĂNG NHẬP */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(13, 71, 161, 0.2); /* Làm tối nhẹ để nổi bật form */
+            background: rgba(13, 71, 161, 0.2); 
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
         .login-box {
             background: rgba(255, 255, 255, 0.4); padding: 40px 25px; border-radius: 25px;
@@ -46,10 +45,10 @@
             border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase;
         }
 
-        /* 3. GIAO DIỆN CHÍNH SAU ĐĂNG NHẬP */
+        /* 3. GIAO DIỆN CHÍNH (TRONG SUỐT ĐỂ LỘ VIDEO) */
         .fixed-header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 20px 0;
-            text-align: center; background: rgba(0, 0, 0, 0.5); /* Nền đen mờ che trên video */
+            text-align: center; background: rgba(0, 0, 0, 0.5);
         }
         .fixed-header h1 { font-size: 1.6rem; text-transform: uppercase; margin: 5px 0; font-weight: 800; letter-spacing: 2px; }
         .fixed-header .subtitle { color: #ffc107; font-size: 1.1rem; font-weight: bold; }
@@ -57,7 +56,7 @@
         #main-content {
             display: none; padding-top: 220px; padding-bottom: 60px;
             width: 100%; position: relative; z-index: 1;
-            background: transparent; /* QUAN TRỌNG: Không được để màu nền xanh ở đây */
+            background: transparent; /* Đảm bảo thấy video nền */
         }
         .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 
@@ -69,7 +68,6 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .menu-btn i { margin-right: 12px; color: #ffc107; }
 
         .accordion-item {
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
@@ -77,7 +75,7 @@
         }
         .accordion-header {
             padding: 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            color: #ffc107; font-weight: bold; font-size: 1.1rem; text-transform: uppercase;
+            color: #ffc107; font-weight: bold; font-size: 1.15rem; text-transform: uppercase;
         }
         .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.5); }
         .sub-link { display: block; padding: 18px 25px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; }
@@ -106,14 +104,13 @@
         <div style="position: absolute; top: 15px; right: 15px; background: #0d47a1; padding: 5px 12px; border-radius: 8px; font-size: 0.8rem;" onclick="logout()">Thoát</div>
         <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="70">
         <h1>Chi bộ Vụ 2</h1>
-        <div class="subtitle">Hệ thống tài liệu số</div>
+        <div class="subtitle">Tài liệu số nội bộ</div>
     </header>
 
     <div id="main-content">
         <nav class="menu-list">
             <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn"><i class="fas fa-file-pdf"></i> Báo cáo chính trị</a>
             <a href="assets/file/nghi_quyet.pdf" target="_blank" class="menu-btn"><i class="fas fa-file-signature"></i> Dự thảo Nghị quyết</a>
-            <a href="assets/file/images/album_anh.pdf" class="menu-btn"><i class="fas fa-images"></i> Hình ảnh hoạt động</a>
 
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)"><span>1. Báo cáo Chi bộ</span><i class="fas fa-chevron-down"></i></div>
@@ -122,9 +119,6 @@
                     <a href="assets/file/bc_thang2.pdf" class="sub-link">Báo cáo tháng 2</a>
                     <a href="assets/file/bc_thang3.pdf" class="sub-link">Báo cáo tháng 3</a>
                     <a href="assets/file/bc_6thang.pdf" class="sub-link highlight">Báo cáo sơ kết 6 tháng</a>
-                    <a href="assets/file/bc_thang7.pdf" class="sub-link">Báo cáo tháng 7</a>
-                    <a href="assets/file/bc_thang8.pdf" class="sub-link">Báo cáo tháng 8</a>
-                    <a href="assets/file/bc_thang9.pdf" class="sub-link">Báo cáo tháng 9</a>
                     <a href="assets/file/bc_thang10.pdf" class="sub-link">Báo cáo tháng 10</a>
                     <a href="assets/file/bc_thang11.pdf" class="sub-link">Báo cáo tháng 11</a>
                     <a href="assets/file/bc_nam.pdf" class="sub-link highlight">Báo cáo tổng kết năm</a>
@@ -140,7 +134,16 @@
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>3. Biên bản họp</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>3. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
+                    <a href="#" class="sub-link">Nghị quyết Trung ương 4 (Khóa XIII)</a>
+                    <a href="#" class="sub-link">Kết luận số 01-KL/TW</a>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>4. Biên bản họp Chi bộ</span><i class="fas fa-chevron-down"></i></div>
                 <div class="accordion-content">
                     <a href="assets/file/bb_thang1.pdf" class="sub-link">Biên bản tháng 1</a>
                     <a href="assets/file/bb_thang2.pdf" class="sub-link">Biên bản tháng 2</a>
@@ -149,7 +152,7 @@
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>4. Chuyên đề 2025</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>5. Sinh hoạt chuyên đề 2025</span><i class="fas fa-chevron-down"></i></div>
                 <div class="accordion-content">
                     <a href="assets/file/chuyen_de_q1.pdf" class="sub-link">Chuyên đề Quý I</a>
                     <a href="assets/file/chuyen_de_q2.pdf" class="sub-link">Chuyên đề Quý II</a>
@@ -168,6 +171,7 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
+            document.body.style.background = "transparent"; /* Xóa màu nền xanh để lộ video */
         }
         function checkPassword() {
             const user = document.getElementById('username-input').value;
@@ -178,7 +182,9 @@
             }
         }
         function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
-        window.onload = function() { if (sessionStorage.getItem('isLoggedInV2') === 'true') showApp(); }
+        window.onload = function() { 
+            if (sessionStorage.getItem('isLoggedInV2') === 'true') { showApp(); }
+        }
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
             content.style.maxHeight = (content.style.maxHeight && content.style.maxHeight !== "0px") ? "0px" : content.scrollHeight + "px";
