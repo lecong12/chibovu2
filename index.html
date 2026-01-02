@@ -6,121 +6,116 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. NỀN VIDEO CĂN GIỮA CHUẨN */
-        #bg-video {
-            position: fixed; top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            z-index: -1000;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            filter: brightness(0.6);
-            background: black;
-        }
-
+        /* 1. THIẾT LẬP NỀN TỔNG THỂ */
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
+            margin: 0; padding: 0; width: 100%; min-height: 100%;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: transparent; color: white; overflow-x: hidden;
+            /* Màu xanh bầu trời đồng nhất với video */
+            background-color: #4da4e0; 
+            color: white; overflow-x: hidden;
         }
 
-        /* 2. MÀN HÌNH ĐĂNG NHẬP (BLUE GLASS) */
+        /* 2. VIDEO NỀN - HIỂN THỊ CHUẨN KHÔNG TRÀN */
+        .video-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1000; display: flex; align-items: center; justify-content: center;
+            background-color: #4da4e0; /* Chống hụt màu */
+        }
+        #bg-video {
+            width: 100%; height: auto; /* Ưu tiên chiều ngang */
+            filter: brightness(0.7);
+        }
+
+        /* 3. MÀN HÌNH ĐĂNG NHẬP ĐẸP */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(225, 245, 254, 0.4); 
+            background: rgba(225, 245, 254, 0.9); 
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         }
         .login-box {
-            background: rgba(255, 255, 255, 0.3); padding: 40px 25px; border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.5); text-align: center; width: 80%; max-width: 300px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            background: white; padding: 40px 25px; border-radius: 25px;
+            text-align: center; width: 85%; max-width: 300px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         }
-        .login-box img { width: 75px; margin-bottom: 15px; }
-        .login-box h2 { color: #0d47a1; font-size: 1.2rem; margin-bottom: 25px; text-transform: uppercase; font-weight: bold; }
+        .login-box h2 { color: #0d47a1; font-size: 1.3rem; margin-bottom: 25px; text-transform: uppercase; font-weight: bold; }
         .login-box input {
-            width: 100%; padding: 14px; margin: 8px 0; border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.5); outline: none; text-align: center; 
-            font-size: 1rem; box-sizing: border-box; background: rgba(255, 255, 255, 0.8);
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px;
+            border: 1px solid #ddd; outline: none; text-align: center; 
+            font-size: 1.1rem; box-sizing: border-box;
         }
         .btn-login-submit {
-            background: #0d47a1; color: white; border: none; padding: 14px; margin-top: 15px;
-            border-radius: 25px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase;
+            background: #0d47a1; color: white; border: none; padding: 15px; margin-top: 15px;
+            border-radius: 30px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; font-size: 1.1rem;
         }
 
-        /* 3. HEADER CỐ ĐỊNH */
+        /* 4. HEADER CỐ ĐỊNH */
         .fixed-header {
             position: fixed; top: 0; left: 0; width: 100%;
-            z-index: 1000; padding: 15px 0;
-            text-align: center; background: rgba(0, 0, 0, 0.4);
+            z-index: 1000; padding: 20px 0;
+            text-align: center; background: rgba(0, 0, 0, 0.5);
         }
-        .fixed-header img { width: 65px; filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
-        /* Tăng cỡ chữ tiêu đề chính */
-        .fixed-header h1 { font-size: 1.5rem; text-transform: uppercase; margin: 5px 0; letter-spacing: 2px; font-weight: 800; }
-        .fixed-header .subtitle { color: #ffc107; font-size: 1rem; font-weight: bold; letter-spacing: 1px; }
+        .fixed-header img { width: 70px; }
+        .fixed-header h1 { font-size: 1.6rem; text-transform: uppercase; margin: 5px 0; font-weight: 800; letter-spacing: 1px; }
+        .fixed-header .subtitle { color: #ffc107; font-size: 1.1rem; font-weight: bold; }
 
         .logout-btn {
-            position: absolute; top: 12px; right: 12px;
-            background: rgba(13, 71, 161, 0.8); color: white; padding: 5px 12px;
-            border-radius: 8px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase;
+            position: absolute; top: 15px; right: 15px;
+            background: #0d47a1; color: white; padding: 6px 12px;
+            border-radius: 8px; font-size: 0.75rem; font-weight: bold;
         }
 
-        /* 4. NỘI DUNG CHÍNH - NÂNG CẤP KÍCH THƯỚC CHỮ */
+        /* 5. NỘI DUNG CHÍNH (TO RÕ - SANG TRỌNG) */
         #main-content {
-            display: none; padding-top: 190px; padding-bottom: 60px;
+            display: none; padding-top: 220px; padding-bottom: 60px;
             width: 100%; position: relative; z-index: 1;
         }
-        .menu-list { width: 92%; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 
-        /* Nút lớn và sang trọng hơn */
         .menu-btn {
-            background: rgba(255, 255, 255, 0.12); color: white; text-decoration: none; 
-            padding: 18px 10px; border-radius: 40px; font-weight: bold; text-align: center;
+            background: rgba(255, 255, 255, 0.2); color: white; text-decoration: none; 
+            padding: 22px 15px; border-radius: 50px; font-weight: bold; text-align: center;
             border: 2px solid #ffc107; text-transform: uppercase; 
-            font-size: 1rem; /* Tăng từ 0.85 lên 1rem */
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-size: 1.1rem; letter-spacing: 1px;
             display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        .menu-btn i { margin-right: 12px; font-size: 1.2rem; color: #ffc107; }
+        .menu-btn i { margin-right: 12px; font-size: 1.3rem; color: #ffc107; }
 
         .accordion-item {
-            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px; overflow: hidden;
         }
         .accordion-header {
-            padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            color: #ffc107; font-weight: bold; 
-            font-size: 0.95rem; /* Tăng cỡ chữ tiêu đề mục */
-            text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            color: #ffc107; font-weight: bold; font-size: 1.1rem; text-transform: uppercase;
         }
-        .accordion-header i { font-size: 1.1rem; }
         
-        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.3); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: rgba(0,0,0,0.5); }
         .sub-link { 
-            display: block; padding: 16px 25px; color: white; text-decoration: none; 
-            border-bottom: 1px solid rgba(255,255,255,0.05); 
-            font-size: 1rem; /* Tăng cỡ chữ tài liệu con */
+            display: block; padding: 20px 30px; color: white; text-decoration: none; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; 
         }
         .highlight { color: #ffc107 !important; font-weight: bold; }
 
-        .footer { text-align: center; padding: 50px 20px; font-size: 0.85rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; }
+        .footer { text-align: center; padding: 60px 20px; font-size: 1rem; font-weight: bold; color: #ffc107; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-    <video autoplay muted loop playsinline id="bg-video">
-        <source src="https://lecong12.github.io/daihoichibo.github.io/assets/video/codang_troixanh.mp4" type="video/mp4">
-    </video>
+    <div class="video-container">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source src="https://lecong12.github.io/daihoichibo.github.io/assets/video/codang_troixanh.mp4" type="video/mp4">
+        </video>
+    </div>
 
     <div id="login-overlay">
         <div class="login-box">
-            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png">
-            <h2>Chi bộ Vụ 2</h2>
+            <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="80">
+            <h2>Hệ thống nội bộ</h2>
             <input type="text" id="username-input" placeholder="Tên đăng nhập">
             <input type="password" id="password-input" placeholder="Mật khẩu">
             <button class="btn-login-submit" onclick="checkPassword()">Đăng nhập</button>
-            <p id="error-msg" style="color: #b71c1c; font-size: 0.75rem; margin-top: 10px; display: none; font-weight: bold;">Thông tin sai!</p>
+            <p id="error-msg" style="color: red; font-size: 0.9rem; margin-top: 10px; display: none;">Sai thông tin!</p>
         </div>
     </div>
 
@@ -138,9 +133,6 @@
             </a>
             <a href="assets/file/nghi_quyet.pdf" target="_blank" class="menu-btn">
                 <i class="fas fa-file-signature"></i> Dự thảo Nghị quyết
-            </a>
-            <a href="assets/file/images/album_anh.pdf" class="menu-btn">
-                <i class="fas fa-images"></i> Hình ảnh hoạt động
             </a>
 
             <div class="accordion-item">
@@ -167,33 +159,12 @@
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/nghi_quyet_du.pdf" class="sub-link">Nghị quyết Đảng ủy</a>
-                    <a href="assets/file/huong_dan.pdf" class="sub-link">Hướng dẫn thực hiện</a>
                 </div>
             </div>
 
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="fas fa-star"></i> 3. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="accordion-content">
-                    <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="fas fa-pen-nib"></i> 4. Biên bản họp Chi bộ</span><i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="accordion-content">
-                    <a href="assets/file/bb_thang1.pdf" class="sub-link">Biên bản tháng 1</a>
-                    <a href="assets/file/bb_thang2.pdf" class="sub-link">Biên bản tháng 2</a>
-                    <a href="assets/file/bb_thang3.pdf" class="sub-link">Biên bản tháng 3</a>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="fas fa-book-open"></i> 5. Sinh hoạt chuyên đề 2025</span><i class="fas fa-chevron-down"></i>
+                    <span><i class="fas fa-book-open"></i> 3. Chuyên đề 2025</span><i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="accordion-content">
                     <a href="assets/file/chuyen_de_q1.pdf" class="sub-link">Chuyên đề Quý I/2025</a>
@@ -203,7 +174,7 @@
                 </div>
             </div>
 
-            <footer class="footer">BAN CHI ỦY CHI BỘ VỤ 2</footer>
+            <footer class="footer">Ban chi ủy chi bộ vụ 2</footer>
         </nav>
     </div>
 
