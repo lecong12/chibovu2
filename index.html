@@ -6,21 +6,21 @@
     <title>Chi bộ Vụ 2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* 1. VIDEO NỀN PHỦ KÍN (OBJECT-FIT: COVER) */
+        /* 1. VIDEO NỀN CỐ ĐỊNH - HIỆN NGAY TỪ ĐẦU */
         #bg-video {
             position: fixed; top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
             width: auto; height: auto;
             z-index: -1000;
             transform: translate(-50%, -50%);
-            object-fit: cover; /* Video sẽ tự cắt hai bên để phủ kín chiều dọc điện thoại */
+            object-fit: cover;
             filter: brightness(0.5);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100%;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #000;
+            background: #001a33; /* Màu nền tối sâu để video nổi bật */
             color: white; overflow-x: hidden;
         }
 
@@ -28,47 +28,71 @@
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.2); /* Trong suốt gần như hoàn toàn */
+            backdrop-filter: blur(10px); /* Hiệu ứng kính mờ để thấy video phía sau */
+            -webkit-backdrop-filter: blur(10px);
         }
+        
         .login-box {
-            background: rgba(255, 255, 255, 0.15); padding: 40px 25px; border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.2); text-align: center; width: 85%; max-width: 300px;
+            background: rgba(255, 255, 255, 0.15); /* Hộp đăng nhập mờ nhẹ */
+            padding: 40px 25px; border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            text-align: center; width: 85%; max-width: 300px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+
+        .login-box h2 { color: white; font-size: 1.4rem; margin-bottom: 25px; text-transform: uppercase; font-weight: bold; }
+        
         .login-box input {
-            width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px; border: none; outline: none; text-align: center;
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px;
+            border: none; outline: none; text-align: center; font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.9); color: #333;
         }
+
         .btn-login-submit {
             background: #ffc107; color: #0d47a1; border: none; padding: 15px; margin-top: 15px;
             border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase;
+            cursor: pointer;
         }
 
         /* 3. GIAO DIỆN CHÍNH */
         .fixed-header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 20px 0;
-            text-align: center; background: rgba(0, 0, 0, 0.5);
+            text-align: center; background: rgba(0, 0, 0, 0.6);
         }
-        .fixed-header h1 { font-size: 1.6rem; text-transform: uppercase; margin: 5px 0; font-weight: 800; }
-        .fixed-header .subtitle { color: #ffc107; font-size: 1.1rem; font-weight: bold; }
 
         #main-content {
             display: none; padding-top: 220px; padding-bottom: 60px;
             width: 100%; position: relative; z-index: 1;
         }
+
         .menu-list { width: 92%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 
-        .menu-btn, .accordion-item {
-            background: rgba(255, 255, 255, 0.1); border: 2px solid #ffc107;
-            border-radius: 50px; overflow: hidden; color: white; text-decoration: none;
-            backdrop-filter: blur(5px);
+        .menu-btn {
+            background: rgba(255, 255, 255, 0.1); color: white; text-decoration: none; 
+            padding: 22px 15px; border-radius: 50px; font-weight: bold; text-align: center;
+            border: 1px solid #ffc107; text-transform: uppercase; 
+            font-size: 1.15rem; display: flex; align-items: center; justify-content: center;
         }
-        .menu-btn { padding: 22px 15px; font-weight: bold; text-align: center; text-transform: uppercase; display: block; font-size: 1.15rem; }
-        
-        .accordion-item { border-radius: 25px; }
-        .accordion-header { padding: 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: #ffc107; font-weight: bold; font-size: 1.15rem; text-transform: uppercase; }
-        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: transparent; }
-        .sub-link { display: block; padding: 18px 25px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; }
 
+        .accordion-item {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px; overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            color: #ffc107; font-weight: bold; font-size: 1.15rem; text-transform: uppercase;
+        }
+
+        .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s; background: transparent; }
+        
+        .sub-link { 
+            display: block; padding: 18px 25px; color: white; text-decoration: none; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.1rem; 
+        }
+
+        /* FOOTER */
         .footer { 
             text-align: center; padding: 40px 20px; 
             font-size: 0.85rem; font-family: "Times New Roman", Times, serif;
@@ -95,14 +119,14 @@
     <header id="header-fixed" class="fixed-header" style="display:none;">
         <div style="position: absolute; top: 15px; right: 15px; background: #0d47a1; padding: 5px 12px; border-radius: 8px; font-size: 0.8rem;" onclick="logout()">Thoát</div>
         <img src="https://lecong12.github.io/daihoichibo.github.io/assets/images/logobtgdvtw.png" width="70">
-        <h1>Chi bộ Vụ 2</h1>
-        <div class="subtitle">Tài liệu số nội bộ</div>
+        <h1 style="text-transform: uppercase;">Chi bộ Vụ 2</h1>
+        <div style="color: #ffc107; font-weight: bold;">Tài liệu số nội bộ</div>
     </header>
 
     <div id="main-content">
         <nav class="menu-list">
-            <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn">Báo cáo chính trị</a>
-            <a href="assets/file/nghi_quyet.pdf" target="_blank" class="menu-btn">Dự thảo Nghị quyết</a>
+            <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn"><i class="fas fa-file-pdf"></i>&nbsp; Báo cáo chính trị</a>
+            <a href="assets/file/nghi_quyet.pdf" target="_blank" class="menu-btn"><i class="fas fa-file-signature"></i>&nbsp; Dự thảo Nghị quyết</a>
 
             <div class="accordion-item">
                 <div class="accordion-header" onclick="toggleAccordion(this)"><span>1. Báo cáo Chi bộ</span><i class="fas fa-chevron-down"></i></div>
@@ -114,9 +138,23 @@
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>2. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>2. Văn bản Đảng ủy</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/nghi_quyet_du.pdf" class="sub-link">Nghị quyết Đảng ủy</a>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>3. Nghị quyết & Kết luận TW</span><i class="fas fa-chevron-down"></i></div>
                 <div class="accordion-content">
                     <a href="assets/file/kltw221_f1e1d.pdf" class="sub-link">Kết luận 221-KL/TW</a>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)"><span>4. Biên bản họp Chi bộ</span><i class="fas fa-chevron-down"></i></div>
+                <div class="accordion-content">
+                    <a href="assets/file/bb_thang1.pdf" class="sub-link">Biên bản tháng 1</a>
                 </div>
             </div>
 
@@ -130,6 +168,7 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
+            document.body.style.background = "transparent";
         }
         function checkPassword() {
             const user = document.getElementById('username-input').value;
@@ -140,11 +179,11 @@
             }
         }
         function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
+        window.onload = function() { if (sessionStorage.getItem('isLoggedInV2') === 'true') showApp(); }
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
             content.style.maxHeight = (content.style.maxHeight && content.style.maxHeight !== "0px") ? "0px" : content.scrollHeight + "px";
         }
-        window.onload = function() { if (sessionStorage.getItem('isLoggedInV2') === 'true') showApp(); }
     </script>
 </body>
 </html>
