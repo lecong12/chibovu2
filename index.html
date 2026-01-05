@@ -9,11 +9,11 @@
         /* 1. VIDEO NỀN SẮC NÉT */
         #bg-video {
             position: fixed; top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
+            width: 85%; max-width: 1000px; height: auto; /* Thu nhỏ video lại */
             z-index: -1000;
             transform: translate(-50%, -50%);
-            object-fit: cover;
+            border-radius: 20px; /* Bo tròn góc video */
+            box-shadow: 0 0 50px rgba(0,0,0,0.8); /* Tạo bóng đổ nổi bật */
             filter: brightness(0.9);
             background-color: #0d47a1;
         }
@@ -25,7 +25,7 @@
         body, html {
             margin: 0; padding: 0; width: 100%; min-height: 100%;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: transparent !important;
+            background: #051e3e !important; /* Thêm màu nền xanh đậm cho khoảng trống */
             color: white; overflow-x: hidden;
         }
 
