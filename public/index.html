@@ -473,6 +473,13 @@
             });
         }
 
+        function openDocumentsInNewTab() {
+            document.querySelectorAll('a[href^="assets/file/"]').forEach((link) => {
+                link.target = '_blank';
+                link.rel = 'noopener';
+            });
+        }
+
         async function loadAvailableDocuments() {
             const response = await fetch('/api/documents?list=1');
             if (!response.ok) {
@@ -724,6 +731,7 @@
 
         async function initializeApp() {
             document.getElementById('login-form').addEventListener('submit', login);
+            openDocumentsInNewTab();
             document.getElementById('upload-form').addEventListener('submit', uploadDocument);
             document.getElementById('upload-mode').addEventListener('change', updateUploadMode);
             document.getElementById('upload-category').addEventListener('change', (event) => {
