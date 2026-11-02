@@ -108,6 +108,8 @@
             display: block; padding: 16px 20px; color: white; text-decoration: none; 
             border-top: 1px solid rgba(255,255,255,0.1); font-size: 1rem; 
         }
+        .sub-link.unavailable { color: rgba(255,255,255,0.65); cursor: not-allowed; }
+        .status-message { display: none; margin: 12px 0; color: #fff; text-align: center; }
 
         /* PHÂN LOẠI NĂM */
         .group-header {
@@ -135,9 +137,12 @@
         <div class="login-box">
             <img src="assets/images/logobtgdvtw.png" width="80">
             <h2 style="margin: 15px 0;">CHI BỘ VỤ ĐỊA PHƯƠNG 2</h2>
-            <input type="text" id="username-input" placeholder="Tên đăng nhập">
-            <input type="password" id="password-input" placeholder="Mật khẩu">
-            <button class="btn-login-submit" onclick="checkPassword()">Đăng nhập</button>
+            <form id="login-form">
+                <input type="text" id="username-input" placeholder="Tên đăng nhập" autocomplete="username" required>
+                <input type="password" id="password-input" placeholder="Mật khẩu" autocomplete="current-password" required>
+                <button class="btn-login-submit" type="submit">Đăng nhập</button>
+            </form>
+            <p id="login-message" class="status-message" role="alert"></p>
         </div>
     </div>
 
@@ -152,6 +157,7 @@
 
     <div id="main-content">
         <nav class="menu-list">
+            <p id="app-message" class="status-message" role="status"></p>
             <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn special-btn"><i class="fas fa-flag"></i>&nbsp; Báo cáo chính trị</a>
             <a href="assets/file/nghi_quyet_dai_hoi.pdf" target="_blank" class="menu-btn special-btn"><i class="fas fa-check-double"></i>&nbsp; Nghị quyết Đại hội</a>
 
@@ -256,27 +262,110 @@
     </div>
 
     <script>
-        const VALID_USER = "v2"; const VALID_PASS = "vu2";
         const video = document.getElementById('bg-video');
+        const loginMessage = document.getElementById('login-message');
+        const appMessage = document.getElementById('app-message');
 
         function showApp() {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
-            video.play(); 
+            video.play().catch((error) => console.warn('Không thể phát video nền:', error));
             video.classList.remove('video-initial');
         }
 
-        function checkPassword() {
-            const user = document.getElementById('username-input').value;
-            const pass = document.getElementById('password-input').value;
-            if (user === VALID_USER && pass === VALID_PASS) {
-                showApp();
-                sessionStorage.setItem('isLoggedInV2', 'true');
-            } else { alert("Thông tin không chính xác!"); }
+        function setMessage(element, message) {
+            element.textContent = message;
+            element.style.display = message ? 'block' : 'none';
         }
 
-        function logout() { sessionStorage.removeItem('isLoggedInV2'); location.reload(); }
+        async function loadAvailableDocuments() {
+            const response = await fetch('/api/documents?list=1');
+            if (!response.ok) {
+                throw new Error(`Không tải được danh sách tài liệu (${response.status}).`);
+            }
+
+            const documents = new Set(await response.json());
+            document.querySelectorAll('a[href^="assets/file/"]').forEach((link) => {
+                const documentPath = link.getAttribute('href').slice('assets/file/'.length);
+                if (!documents.has(documentPath)) {
+                    link.removeAttribute('href');
+                    link.setAttribute('aria-disabled', 'true');
+                    link.classList.add('unavailable');
+                    link.title = 'Tài liệu chưa được cập nhật';
+                    link.textContent += ' — Chưa cập nhật';
+                }
+            });
+        }
+
+        async function login(event) {
+            event.preventDefault();
+            setMessage(loginMessage, '');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: document.getElementById('username-input').value,
+                        password: document.getElementById('password-input').value
+                    })
+                });
+
+                if (!response.ok) {
+                    setMessage(loginMessage, response.status === 401
+                        ? 'Tên đăng nhập hoặc mật khẩu không chính xác.'
+                        : 'Không thể đăng nhập. Vui lòng thử lại sau.');
+                    return;
+                }
+
+                showApp();
+                try {
+                    await loadAvailableDocuments();
+                } catch (error) {
+                    console.error('Lỗi tải danh sách tài liệu:', error);
+                    setMessage(appMessage, 'Đã đăng nhập nhưng không thể tải danh sách tài liệu.');
+                }
+            } catch (error) {
+                console.error('Lỗi đăng nhập hoặc tải danh sách tài liệu:', error);
+                setMessage(loginMessage, 'Không thể kết nối máy chủ. Vui lòng thử lại.');
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', { method: 'POST' });
+                if (!response.ok) {
+                    setMessage(appMessage, 'Không thể đăng xuất. Vui lòng thử lại.');
+                    return;
+                }
+                window.location.reload();
+            } catch (error) {
+                console.error('Lỗi đăng xuất:', error);
+                setMessage(appMessage, 'Không thể kết nối máy chủ để đăng xuất.');
+            }
+        }
+
+        async function initializeApp() {
+            document.getElementById('login-form').addEventListener('submit', login);
+            try {
+                const response = await fetch('/api/session');
+                if (response.ok) {
+                    showApp();
+                    try {
+                        await loadAvailableDocuments();
+                    } catch (error) {
+                        console.error('Lỗi tải danh sách tài liệu:', error);
+                        setMessage(appMessage, 'Không thể tải danh sách tài liệu.');
+                    }
+                } else if (response.status !== 401) {
+                    setMessage(loginMessage, 'Không thể kiểm tra trạng thái đăng nhập.');
+                }
+            } catch (error) {
+                console.error('Lỗi kiểm tra phiên đăng nhập:', error);
+                setMessage(loginMessage, 'Không thể kết nối máy chủ. Vui lòng thử lại.');
+            }
+        }
 
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
@@ -287,14 +376,10 @@
             }
         }
 
-        window.onload = function() {
+        window.addEventListener('load', function() {
             video.load();
-            if (sessionStorage.getItem('isLoggedInV2') === 'true') {
-                showApp();
-            } else {
-                video.pause();
-            }
-        }
+            initializeApp();
+        });
     </script>
 </body>
 </html>
