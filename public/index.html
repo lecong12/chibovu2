@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi bộ Vụ Địa phương 2</title>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         * { box-sizing: border-box; }
@@ -55,6 +56,7 @@
             background: rgba(183, 28, 28, 0.8); padding: 6px 10px; 
             border-radius: 8px; font-size: 0.7rem; color: white;
             display: flex; align-items: center; gap: 5px; cursor: pointer;
+            border: 0; font: inherit; font-size: 0.7rem;
         }
 
         /* 3. MÀN HÌNH ĐĂNG NHẬP */
@@ -72,9 +74,13 @@
             width: 100%; padding: 15px; margin: 10px 0; border-radius: 30px; border: none; 
             text-align: center; font-size: 1.1rem; outline: none;
         }
+        .login-box label {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+        }
         .btn-login-submit {
             background: #ffc107; color: #0d47a1; border: none; padding: 15px; margin-top: 15px;
-            border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase;
+            border-radius: 30px; font-weight: bold; width: 100%; text-transform: uppercase; cursor: pointer;
         }
 
         /* 4. NỘI DUNG CHÍNH */
@@ -102,8 +108,9 @@
         }
         .accordion-header { 
             padding: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; 
-            color: #ffc107; font-weight: bold; text-transform: uppercase;
+            font: inherit; color: #ffc107; font-weight: bold; text-transform: uppercase;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+            width: 100%; border: 0; background: transparent; text-align: left;
         }
         .accordion-content { max-height: 0; overflow: hidden; transition: 0.3s ease-in-out; background: rgba(0,0,0,0.3); }
         .sub-link { 
@@ -131,6 +138,19 @@
         .menu-btn:focus-visible, .sub-link:focus-visible {
             outline: 3px solid #ffc107;
             outline-offset: 3px;
+        }
+        .accordion-header:focus-visible, .btn-logout:focus-visible,
+        .login-box input:focus-visible, .btn-login-submit:focus-visible {
+            outline: 3px solid #ffc107;
+            outline-offset: 3px;
+        }
+        .menu-btn:hover, .sub-link:hover { background-color: rgba(255, 255, 255, 0.12); }
+        .btn-logout:hover { background: #b71c1c; }
+        .btn-login-submit:hover { background: #ffca28; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+            #bg-video { display: none; }
         }
 
         @media (min-width: 768px) {
@@ -194,16 +214,18 @@
 </head>
 <body>
 
-    <video muted loop playsinline preload="auto" id="bg-video" class="video-initial" poster="assets/images/bgdoan.png">
+    <video muted loop playsinline preload="none" id="bg-video" class="video-initial" poster="assets/images/bgdoan.png" aria-hidden="true">
         <source src="assets/video/codang_troixanh.mp4" type="video/mp4">
     </video>
 
     <div id="login-overlay">
         <div class="login-box">
-            <img src="assets/images/logobtgdvtw.png" width="80">
+            <img src="assets/images/logobtgdvtw.png" width="80" alt="Logo Chi bộ">
             <h2 style="margin: 15px 0;">CHI BỘ VỤ ĐỊA PHƯƠNG 2</h2>
             <form id="login-form">
-                <input type="text" id="username-input" placeholder="Tên đăng nhập" autocomplete="username" required>
+                <label for="username-input">Tên đăng nhập</label>
+                <input type="text" id="username-input" placeholder="Tên đăng nhập" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+                <label for="password-input">Mật khẩu</label>
                 <input type="password" id="password-input" placeholder="Mật khẩu" autocomplete="current-password" required>
                 <button class="btn-login-submit" type="submit">Đăng nhập</button>
             </form>
@@ -212,23 +234,23 @@
     </div>
 
     <header id="header-fixed" class="fixed-header" style="display:none;">
-        <div class="btn-logout" onclick="logout()">
+        <button class="btn-logout" type="button" onclick="logout()" aria-label="Đăng xuất">
             <i class="fas fa-sign-out-alt"></i> THOÁT
-        </div>
-        <img src="assets/images/logobtgdvtw.png" width="55">
+        </button>
+        <img src="assets/images/logobtgdvtw.png" width="55" alt="Logo Chi bộ">
         <h1>CHI BỘ VỤ ĐỊA PHƯƠNG 2</h1>
         <div class="subtitle">HỆ THỐNG TÀI LIỆU SỐ CHI BỘ</div>
     </header>
 
     <div id="main-content">
-        <nav class="menu-list">
+        <nav class="menu-list" aria-label="Danh mục tài liệu">
             <p id="app-message" class="status-message" role="status"></p>
-            <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" class="menu-btn special-btn"><i class="fas fa-flag"></i>&nbsp; Báo cáo chính trị</a>
-            <a href="assets/file/nghi_quyet_dai_hoi.pdf" target="_blank" class="menu-btn special-btn"><i class="fas fa-check-double"></i>&nbsp; Nghị quyết Đại hội</a>
+            <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" rel="noopener" class="menu-btn special-btn"><i class="fas fa-flag" aria-hidden="true"></i>&nbsp; Báo cáo chính trị</a>
+            <a href="assets/file/nghi_quyet_dai_hoi.pdf" target="_blank" rel="noopener" class="menu-btn special-btn"><i class="fas fa-check-double" aria-hidden="true"></i>&nbsp; Nghị quyết Đại hội</a>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>1. Báo cáo Chi bộ</span><i class="fas fa-file-alt"></i></div>
-                <div class="accordion-content">
+                <button class="accordion-header" type="button" aria-expanded="false" aria-controls="reports-content" onclick="toggleAccordion(this)"><span>1. Báo cáo Chi bộ</span><i class="fas fa-file-alt" aria-hidden="true"></i></button>
+                <div class="accordion-content" id="reports-content" aria-hidden="true" inert>
                     
                     <!-- NĂM 2025 -->
                     <div class="group-header">NĂM 2025</div>
@@ -279,8 +301,8 @@
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>2. Đảng vụ</span><i class="fas fa-user-shield"></i></div>
-                <div class="accordion-content">
+                <button class="accordion-header" type="button" aria-expanded="false" aria-controls="party-affairs-content" onclick="toggleAccordion(this)"><span>2. Đảng vụ</span><i class="fas fa-user-shield" aria-hidden="true"></i></button>
+                <div class="accordion-content" id="party-affairs-content" aria-hidden="true" inert>
                     <a href="assets/file/danh_sach_dang_vien.pdf" class="sub-link">Danh sách Đảng viên</a>
                     <a href="assets/file/danh_sach_dang_phi.pdf" class="sub-link">Danh sách nộp Đảng phí</a>
                     <a href="assets/file/quy_che_lam_viec.pdf" class="sub-link">Quy chế làm việc Chi bộ</a>
@@ -288,8 +310,8 @@
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>3. Biên bản họp Chi bộ</span><i class="fas fa-history"></i></div>
-                <div class="accordion-content">
+                <button class="accordion-header" type="button" aria-expanded="false" aria-controls="meeting-minutes-content" onclick="toggleAccordion(this)"><span>3. Biên bản họp Chi bộ</span><i class="fas fa-history" aria-hidden="true"></i></button>
+                <div class="accordion-content" id="meeting-minutes-content" aria-hidden="true" inert>
                     <a href="assets/file/bb_thang1.pdf" class="sub-link">Biên bản tháng 01</a>
                     <a href="assets/file/bb_thang2.pdf" class="sub-link">Biên bản tháng 02</a>
                     <a href="assets/file/bb_thang3.pdf" class="sub-link">Biên bản tháng 03</a>
@@ -297,8 +319,8 @@
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>4. Sinh hoạt chuyên đề</span><i class="fas fa-star"></i></div>
-                <div class="accordion-content">
+                <button class="accordion-header" type="button" aria-expanded="false" aria-controls="special-topics-content" onclick="toggleAccordion(this)"><span>4. Sinh hoạt chuyên đề</span><i class="fas fa-star" aria-hidden="true"></i></button>
+                <div class="accordion-content" id="special-topics-content" aria-hidden="true" inert>
                     <a href="assets/file/chuyen_de_q1.pdf" class="sub-link">Chuyên đề Quý I</a>
                     <a href="assets/file/chuyen_de_q2.pdf" class="sub-link">Chuyên đề Quý II</a>
                     <a href="assets/file/chuyen_de_q3.pdf" class="sub-link">Chuyên đề Quý III</a>
@@ -307,16 +329,16 @@
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>5. Văn bản Đảng ủy cấp trên</span><i class="fas fa-university"></i></div>
-                <div class="accordion-content">
+                <button class="accordion-header" type="button" aria-expanded="false" aria-controls="superior-documents-content" onclick="toggleAccordion(this)"><span>5. Văn bản Đảng ủy cấp trên</span><i class="fas fa-university" aria-hidden="true"></i></button>
+                <div class="accordion-content" id="superior-documents-content" aria-hidden="true" inert>
                     <a href="assets/file/nq_dang_uy.pdf" class="sub-link">Nghị quyết Đảng ủy cơ quan</a>
                     <a href="assets/file/huong_dan.pdf" class="sub-link">Hướng dẫn sinh hoạt Chi bộ</a>
                 </div>
             </div>
 
             <div class="accordion-item">
-                <div class="accordion-header" onclick="toggleAccordion(this)"><span>6. Nghị quyết - Kết luận TW</span><i class="fas fa-gavel"></i></div>
-                <div class="accordion-content">
+                <button class="accordion-header" type="button" aria-expanded="false" aria-controls="central-resolutions-content" onclick="toggleAccordion(this)"><span>6. Nghị quyết - Kết luận TW</span><i class="fas fa-gavel" aria-hidden="true"></i></button>
+                <div class="accordion-content" id="central-resolutions-content" aria-hidden="true" inert>
                     <a href="assets/file/kltw221.pdf" class="sub-link">Kết luận 221-KL/TW</a>
                     <a href="assets/file/nq_tw4.pdf" class="sub-link">Nghị quyết Trung ương 4</a>
                 </div>
@@ -335,13 +357,22 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('header-fixed').style.display = 'block';
             document.getElementById('main-content').style.display = 'block';
-            video.play().catch((error) => console.warn('Không thể phát video nền:', error));
-            video.classList.remove('video-initial');
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                video.load();
+                video.play().catch((error) => console.warn('Không thể phát video nền:', error));
+                video.classList.remove('video-initial');
+            }
         }
 
         function setMessage(element, message) {
             element.textContent = message;
             element.style.display = message ? 'block' : 'none';
+        }
+
+        function refreshExpandedAccordions() {
+            document.querySelectorAll('.accordion-header[aria-expanded="true"]').forEach((header) => {
+                header.nextElementSibling.style.maxHeight = `${header.nextElementSibling.scrollHeight}px`;
+            });
         }
 
         async function loadAvailableDocuments() {
@@ -361,6 +392,7 @@
                     link.textContent += ' — Chưa cập nhật';
                 }
             });
+            refreshExpandedAccordions();
         }
 
         async function login(event) {
@@ -434,7 +466,11 @@
 
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
-            if (content.style.maxHeight && content.style.maxHeight !== "0px") {
+            const isExpanded = element.getAttribute('aria-expanded') === 'true';
+            element.setAttribute('aria-expanded', String(!isExpanded));
+            content.setAttribute('aria-hidden', String(isExpanded));
+            content.inert = isExpanded;
+            if (isExpanded) {
                 content.style.maxHeight = "0px";
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
@@ -442,9 +478,9 @@
         }
 
         window.addEventListener('load', function() {
-            video.load();
             initializeApp();
         });
+        window.addEventListener('resize', refreshExpandedAccordions);
     </script>
 </body>
 </html>
