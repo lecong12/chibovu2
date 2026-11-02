@@ -4,6 +4,9 @@
   "functions": {
     "api/documents.js": {
       "includeFiles": "private-documents/**"
+    },
+    "api/uploads.js": {
+      "includeFiles": "private-documents/**"
     }
   },
   "rewrites": [

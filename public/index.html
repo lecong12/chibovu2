@@ -119,6 +119,58 @@
         }
         .sub-link.unavailable { color: rgba(255,255,255,0.65); cursor: not-allowed; }
         .status-message { display: none; margin: 12px 0; color: #fff; text-align: center; }
+        .upload-panel {
+            grid-column: 1 / -1;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 15px;
+            background: rgba(0,0,0,0.28);
+            backdrop-filter: blur(5px);
+        }
+        .upload-panel summary {
+            padding: 16px 18px;
+            color: #ffc107;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .upload-form { display: grid; gap: 12px; padding: 0 18px 18px; }
+        .upload-form label { font-weight: 600; }
+        .upload-form select, .upload-form input[type="file"] {
+            width: 100%;
+            min-height: 44px;
+            padding: 9px;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 8px;
+            background: #fff;
+            color: #17314d;
+        }
+        .upload-submit {
+            min-height: 46px;
+            border: 0;
+            border-radius: 8px;
+            background: #ffc107;
+            color: #17314d;
+            font: inherit;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .upload-submit:disabled { cursor: wait; opacity: 0.65; }
+        #upload-status { margin: 0; }
+        #uploaded-documents { grid-column: 1 / -1; }
+        .uploaded-category {
+            margin: 0 0 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.25);
+        }
+        .uploaded-category h3 {
+            margin: 0;
+            padding: 12px 16px;
+            color: #ffc107;
+            font-size: 1rem;
+        }
+        .uploaded-category .sub-link { border-top: 1px solid rgba(255,255,255,0.1); }
 
         /* PHÂN LOẠI NĂM */
         .group-header {
@@ -140,7 +192,9 @@
             outline-offset: 3px;
         }
         .accordion-header:focus-visible, .btn-logout:focus-visible,
-        .login-box input:focus-visible, .btn-login-submit:focus-visible {
+        .login-box input:focus-visible, .btn-login-submit:focus-visible,
+        .upload-panel summary:focus-visible, .upload-form select:focus-visible,
+        .upload-form input:focus-visible, .upload-submit:focus-visible {
             outline: 3px solid #ffc107;
             outline-offset: 3px;
         }
@@ -245,6 +299,48 @@
     <div id="main-content">
         <nav class="menu-list" aria-label="Danh mục tài liệu">
             <p id="app-message" class="status-message" role="status"></p>
+            <details class="upload-panel" id="upload-panel">
+                <summary><i class="fas fa-cloud-upload-alt" aria-hidden="true"></i> Cập nhật / tải tài liệu lên</summary>
+                <form id="upload-form" class="upload-form">
+                    <label for="upload-mode">Cách cập nhật</label>
+                    <select id="upload-mode">
+                        <option value="new">Thêm tài liệu mới</option>
+                        <option value="replace">Thay thế tài liệu hiện có</option>
+                    </select>
+                    <div id="new-document-fields">
+                        <label for="upload-category">Danh mục</label>
+                        <select id="upload-category">
+                            <option value="bao-cao">Báo cáo Chi bộ</option>
+                            <option value="dang-vu">Đảng vụ</option>
+                            <option value="bien-ban">Biên bản họp Chi bộ</option>
+                            <option value="chuyen-de">Sinh hoạt chuyên đề</option>
+                            <option value="van-ban-cap-tren">Văn bản Đảng ủy cấp trên</option>
+                            <option value="nghi-quyet-tw">Nghị quyết - Kết luận TW</option>
+                            <option value="tai-lieu-chung">Tài liệu khác</option>
+                        </select>
+                        <div id="upload-year-field">
+                            <label for="upload-year">Năm</label>
+                            <select id="upload-year">
+                                <option>2025</option>
+                                <option selected>2026</option>
+                                <option>2027</option>
+                                <option>2028</option>
+                                <option>2029</option>
+                                <option>2030</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="replace-document-field" hidden>
+                        <label for="replace-document">Tài liệu cần thay</label>
+                        <select id="replace-document"></select>
+                    </div>
+                    <label for="document-file">Chọn tệp PDF (tối đa 25 MB)</label>
+                    <input id="document-file" type="file" accept=".pdf,application/pdf" required>
+                    <button class="upload-submit" type="submit">Tải tài liệu lên</button>
+                    <p id="upload-status" role="status" aria-live="polite"></p>
+                </form>
+            </details>
+            <div id="uploaded-documents" aria-live="polite"></div>
             <a href="assets/file/bao_cao_chinh_tri.pdf" target="_blank" rel="noopener" class="menu-btn special-btn"><i class="fas fa-flag" aria-hidden="true"></i>&nbsp; Báo cáo chính trị</a>
             <a href="assets/file/nghi_quyet_dai_hoi.pdf" target="_blank" rel="noopener" class="menu-btn special-btn"><i class="fas fa-check-double" aria-hidden="true"></i>&nbsp; Nghị quyết Đại hội</a>
 
@@ -352,6 +448,8 @@
         const video = document.getElementById('bg-video');
         const loginMessage = document.getElementById('login-message');
         const appMessage = document.getElementById('app-message');
+        const uploadStatus = document.getElementById('upload-status');
+        let availableDocuments = [];
 
         function showApp() {
             document.getElementById('login-overlay').style.display = 'none';
@@ -381,18 +479,199 @@
                 throw new Error(`Không tải được danh sách tài liệu (${response.status}).`);
             }
 
-            const documents = new Set(await response.json());
-            document.querySelectorAll('a[href^="assets/file/"]').forEach((link) => {
-                const documentPath = link.getAttribute('href').slice('assets/file/'.length);
-                if (!documents.has(documentPath)) {
+            availableDocuments = await response.json();
+            document.querySelectorAll('a[href^="assets/file/"], a[data-document-path]').forEach((link) => {
+                const documentPath = link.dataset.documentPath
+                    || link.getAttribute('href').slice('assets/file/'.length);
+                link.dataset.documentPath = documentPath;
+                if (!link.dataset.originalLabel) {
+                    link.dataset.originalLabel = link.textContent.trim();
+                }
+                if (!availableDocuments.includes(documentPath)) {
                     link.removeAttribute('href');
                     link.setAttribute('aria-disabled', 'true');
                     link.classList.add('unavailable');
                     link.title = 'Tài liệu chưa được cập nhật';
-                    link.textContent += ' — Chưa cập nhật';
+                    link.textContent = `${link.dataset.originalLabel} — Chưa cập nhật`;
+                } else {
+                    link.href = `assets/file/${documentPath}`;
+                    link.removeAttribute('aria-disabled');
+                    link.classList.remove('unavailable');
+                    link.removeAttribute('title');
+                    link.textContent = link.dataset.originalLabel;
                 }
             });
+            populateReplacementOptions();
             refreshExpandedAccordions();
+        }
+
+        function populateReplacementOptions() {
+            const select = document.getElementById('replace-document');
+            const labels = new Map();
+            document.querySelectorAll('a[data-document-path]').forEach((link) => {
+                labels.set(link.dataset.documentPath, link.dataset.originalLabel);
+            });
+            select.replaceChildren();
+            availableDocuments.filter((path) => !path.startsWith('uploads/')).forEach((path) => {
+                const option = document.createElement('option');
+                option.value = path;
+                option.textContent = labels.get(path) || path.replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+                select.append(option);
+            });
+            availableDocuments.filter((path) => path.startsWith('uploads/')).forEach((path) => {
+                const option = document.createElement('option');
+                option.value = path;
+                option.textContent = path.replace(/^uploads\//, '').replace(/\.pdf$/i, '').replace(/[_/-]/g, ' ');
+                select.append(option);
+            });
+        }
+
+        const categoryLabels = {
+            'bao-cao': 'Báo cáo Chi bộ',
+            'dang-vu': 'Đảng vụ',
+            'bien-ban': 'Biên bản họp Chi bộ',
+            'chuyen-de': 'Sinh hoạt chuyên đề',
+            'van-ban-cap-tren': 'Văn bản Đảng ủy cấp trên',
+            'nghi-quyet-tw': 'Nghị quyết - Kết luận TW',
+            'tai-lieu-chung': 'Tài liệu khác'
+        };
+
+        async function loadUploadedDocuments() {
+            const response = await fetch('/api/uploads');
+            if (response.status === 503) {
+                setMessage(uploadStatus, 'Chưa cấu hình kho R2/S3 cho chức năng tải tài liệu.');
+                document.querySelector('.upload-submit').disabled = true;
+                return;
+            }
+            if (!response.ok) {
+                throw new Error(`Không tải được danh sách upload (${response.status}).`);
+            }
+
+            const uploads = (await response.json()).filter((item) => item.path.startsWith('uploads/'));
+            const container = document.getElementById('uploaded-documents');
+            container.replaceChildren();
+            const grouped = new Map();
+            for (const upload of uploads) {
+                const [, category, ...rest] = upload.path.split('/');
+                const year = category === 'bao-cao' ? rest.shift() : '';
+                const groupName = `${category}:${year}`;
+                if (!grouped.has(groupName)) grouped.set(groupName, { category, year, paths: [] });
+                grouped.get(groupName).paths.push(upload.path);
+            }
+
+            for (const group of grouped.values()) {
+                const section = document.createElement('section');
+                section.className = 'uploaded-category';
+                const heading = document.createElement('h3');
+                heading.textContent = `${categoryLabels[group.category] || 'Tài liệu'}${group.year ? ` — Năm ${group.year}` : ''}`;
+                section.append(heading);
+                for (const path of group.paths.sort()) {
+                    const link = document.createElement('a');
+                    link.className = 'sub-link';
+                    link.href = `assets/file/${path}`;
+                    link.target = '_blank';
+                    link.rel = 'noopener';
+                    link.dataset.documentPath = path;
+                    link.textContent = path.split('/').pop().replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+                    section.append(link);
+                }
+                container.append(section);
+            }
+        }
+
+        function updateUploadMode() {
+            const isReplacement = document.getElementById('upload-mode').value === 'replace';
+            document.getElementById('new-document-fields').hidden = isReplacement;
+            document.getElementById('replace-document-field').hidden = !isReplacement;
+        }
+
+        async function uploadDocument(event) {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const submit = form.querySelector('.upload-submit');
+            const file = document.getElementById('document-file').files[0];
+            const replacing = document.getElementById('upload-mode').value === 'replace';
+            if (!file) return;
+            if (!file.name.toLowerCase().endsWith('.pdf') || file.size > 25 * 1024 * 1024) {
+                setMessage(uploadStatus, 'Chỉ chấp nhận tệp PDF có dung lượng tối đa 25 MB.');
+                return;
+            }
+
+            submit.disabled = true;
+            setMessage(uploadStatus, 'Đang chuẩn bị tải lên…');
+            let pendingKey;
+            try {
+                const startResponse = await fetch('/api/uploads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'start',
+                        mode: replacing ? 'replace' : 'new',
+                        fileName: file.name,
+                        size: file.size,
+                        category: document.getElementById('upload-category').value,
+                        year: document.getElementById('upload-category').value === 'bao-cao'
+                            ? document.getElementById('upload-year').value
+                            : undefined,
+                        replacePath: replacing ? document.getElementById('replace-document').value : undefined
+                    })
+                });
+                const upload = await startResponse.json();
+                if (!startResponse.ok) throw new Error(upload.error || 'Không thể bắt đầu tải lên.');
+                pendingKey = upload.pendingKey;
+
+                setMessage(uploadStatus, 'Đang tải tệp lên kho lưu trữ…');
+                const putResponse = await fetch(upload.uploadUrl, {
+                    method: 'PUT',
+                    headers: upload.uploadHeaders,
+                    body: file
+                });
+                if (!putResponse.ok) {
+                    throw new Error('Kho lưu trữ từ chối tệp. Hãy kiểm tra cấu hình CORS của bucket.');
+                }
+
+                setMessage(uploadStatus, 'Đang xác minh và cập nhật tài liệu…');
+                const completeResponse = await fetch('/api/uploads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'complete',
+                        pendingKey: upload.pendingKey,
+                        targetPath: upload.targetPath
+                    })
+                });
+                const result = await completeResponse.json();
+                if (!completeResponse.ok) throw new Error(result.error || 'Không thể hoàn tất cập nhật.');
+
+                pendingKey = undefined;
+                form.reset();
+                updateUploadMode();
+                try {
+                    await Promise.all([loadAvailableDocuments(), loadUploadedDocuments()]);
+                    setMessage(uploadStatus, 'Đã cập nhật tài liệu thành công.');
+                } catch (refreshError) {
+                    console.error('Đã tải lên nhưng không thể làm mới danh sách tài liệu:', refreshError);
+                    setMessage(uploadStatus, 'Đã cập nhật thành công. Tải lại trang nếu chưa thấy tài liệu mới.');
+                }
+            } catch (error) {
+                console.error('Lỗi tải tài liệu lên:', error);
+                if (pendingKey) {
+                    try {
+                        await fetch('/api/uploads', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'cancel', pendingKey })
+                        });
+                    } catch (cleanupError) {
+                        console.error('Không thể dọn tệp upload tạm:', cleanupError);
+                    }
+                }
+                setMessage(uploadStatus, error instanceof TypeError
+                    ? 'Không kết nối được kho lưu trữ. Hãy kiểm tra CORS của bucket rồi thử lại.'
+                    : error.message || 'Không thể tải tài liệu lên. Vui lòng thử lại.');
+            } finally {
+                submit.disabled = false;
+            }
         }
 
         async function login(event) {
@@ -418,7 +697,7 @@
 
                 showApp();
                 try {
-                    await loadAvailableDocuments();
+                    await Promise.all([loadAvailableDocuments(), loadUploadedDocuments()]);
                 } catch (error) {
                     console.error('Lỗi tải danh sách tài liệu:', error);
                     setMessage(appMessage, 'Đã đăng nhập nhưng không thể tải danh sách tài liệu.');
@@ -445,12 +724,18 @@
 
         async function initializeApp() {
             document.getElementById('login-form').addEventListener('submit', login);
+            document.getElementById('upload-form').addEventListener('submit', uploadDocument);
+            document.getElementById('upload-mode').addEventListener('change', updateUploadMode);
+            document.getElementById('upload-category').addEventListener('change', (event) => {
+                document.getElementById('upload-year-field').hidden = event.target.value !== 'bao-cao';
+            });
+            updateUploadMode();
             try {
                 const response = await fetch('/api/session');
                 if (response.ok) {
                     showApp();
                     try {
-                        await loadAvailableDocuments();
+                        await Promise.all([loadAvailableDocuments(), loadUploadedDocuments()]);
                     } catch (error) {
                         console.error('Lỗi tải danh sách tài liệu:', error);
                         setMessage(appMessage, 'Không thể tải danh sách tài liệu.');

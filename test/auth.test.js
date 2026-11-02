@@ -2,7 +2,9 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const login = require("../api/login");
 const documents = require("../api/documents");
+const uploads = require("../api/uploads");
 const { createSessionToken } = require("../lib/auth");
+const { createNewDocumentPath } = require("../lib/storage");
 
 function createResponse() {
     return {
@@ -34,11 +36,19 @@ function withAuthEnvironment(callback) {
     const previous = {
         AUTH_USERNAME: process.env.AUTH_USERNAME,
         AUTH_PASSWORD: process.env.AUTH_PASSWORD,
-        SESSION_SECRET: process.env.SESSION_SECRET
+        SESSION_SECRET: process.env.SESSION_SECRET,
+        S3_BUCKET: process.env.S3_BUCKET,
+        S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+        S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+        S3_ENDPOINT: process.env.S3_ENDPOINT,
+        S3_REGION: process.env.S3_REGION
     };
     process.env.AUTH_USERNAME = "test-user";
     process.env.AUTH_PASSWORD = "test-password";
     process.env.SESSION_SECRET = "test-session-secret-that-is-at-least-32-bytes";
+    for (const key of ["S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY", "S3_ENDPOINT", "S3_REGION"]) {
+        delete process.env[key];
+    }
 
     return Promise.resolve()
         .then(callback)
@@ -131,3 +141,37 @@ test("document endpoint serves PDFs only to an authenticated session", () => wit
     assert.ok(Buffer.isBuffer(response.body));
     assert.ok(response.body.length > 0);
 }));
+
+test("upload endpoints require a session and persistent storage configuration", () => withAuthEnvironment(async () => {
+    const unauthenticatedResponse = createResponse();
+    await uploads({ method: "GET", headers: {} }, unauthenticatedResponse);
+    assert.equal(unauthenticatedResponse.statusCode, 401);
+
+    const token = createSessionToken(process.env.SESSION_SECRET);
+    const unconfiguredResponse = createResponse();
+    await uploads({
+        method: "GET",
+        headers: { cookie: `v2_session=${token}` }
+    }, unconfiguredResponse);
+    assert.equal(unconfiguredResponse.statusCode, 503);
+}));
+
+test("new upload paths are sanitized and limited to supported categories", () => {
+    assert.equal(createNewDocumentPath({
+        fileName: "Báo cáo tháng 3.pdf",
+        category: "bao-cao",
+        year: "2026"
+    }), "uploads/bao-cao/2026/Bao-cao-thang-3.pdf");
+    assert.equal(createNewDocumentPath({
+        fileName: "../private.pdf",
+        category: "tai-lieu-chung"
+    }), "uploads/tai-lieu-chung/private.pdf");
+    assert.equal(createNewDocumentPath({
+        fileName: "report.pdf",
+        category: "unknown"
+    }), null);
+    assert.equal(createNewDocumentPath({
+        fileName: "notes.txt",
+        category: "tai-lieu-chung"
+    }), null);
+});

@@ -1,29 +1,16 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 const { getAuthConfiguration, isAuthenticated } = require("../lib/auth");
+const { DOCUMENT_ROOT, listLocalDocuments } = require("../lib/document-files");
+const {
+    GetObjectCommand,
+    HeadObjectCommand,
+    createStorageClient,
+    getStorageConfiguration,
+    listStoredDocuments
+} = require("../lib/storage");
 
-const DOCUMENT_ROOT = path.resolve(__dirname, "..", "private-documents");
 const DOCUMENT_PATH_PATTERN = /^(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.pdf$/;
-
-async function listDocuments(directory, relativeDirectory = "") {
-    const entries = await fs.readdir(directory, { withFileTypes: true });
-    const documents = [];
-
-    for (const entry of entries) {
-        const relativePath = relativeDirectory
-            ? `${relativeDirectory}/${entry.name}`
-            : entry.name;
-        const fullPath = path.join(directory, entry.name);
-
-        if (entry.isDirectory()) {
-            documents.push(...await listDocuments(fullPath, relativePath));
-        } else if (entry.isFile() && entry.name.toLowerCase().endsWith(".pdf")) {
-            documents.push(relativePath);
-        }
-    }
-
-    return documents;
-}
 
 module.exports = async function documents(request, response) {
     if (request.method !== "GET" && request.method !== "HEAD") {
@@ -46,8 +33,14 @@ module.exports = async function documents(request, response) {
     const query = request.query || {};
     if (query.list === "1") {
         try {
-            const availableDocuments = await listDocuments(DOCUMENT_ROOT);
-            return response.status(200).json(availableDocuments);
+            const availableDocuments = await listLocalDocuments();
+            const storageConfiguration = getStorageConfiguration();
+            if (storageConfiguration) {
+                const client = createStorageClient(storageConfiguration);
+                const storedDocuments = await listStoredDocuments(client, storageConfiguration.bucket);
+                availableDocuments.push(...storedDocuments.map((document) => document.path));
+            }
+            return response.status(200).json([...new Set(availableDocuments)].sort());
         } catch (error) {
             console.error("Unable to list private documents:", error);
             return response.status(500).json({ error: "Unable to list documents" });
@@ -64,6 +57,35 @@ module.exports = async function documents(request, response) {
         return response.status(400).json({ error: "Invalid document path" });
     }
 
+    const storageConfiguration = getStorageConfiguration();
+    if (storageConfiguration) {
+        try {
+            const client = createStorageClient(storageConfiguration);
+            if (request.method === "HEAD") {
+                const metadata = await client.send(new HeadObjectCommand({
+                    Bucket: storageConfiguration.bucket,
+                    Key: relativePath
+                }));
+                setDocumentHeaders(response, relativePath, metadata.ContentLength);
+                return response.status(200).end();
+            }
+
+            const storedDocument = await client.send(new GetObjectCommand({
+                Bucket: storageConfiguration.bucket,
+                Key: relativePath
+            }));
+            const document = Buffer.from(await storedDocument.Body.transformToByteArray());
+            setDocumentHeaders(response, relativePath, document.length);
+            return response.status(200).send(document);
+        } catch (error) {
+            if (error.name !== "NoSuchKey" && error.name !== "NotFound"
+                && error.$metadata?.httpStatusCode !== 404) {
+                console.error("Unable to read document from object storage:", error);
+                return response.status(500).json({ error: "Unable to read document" });
+            }
+        }
+    }
+
     let document;
     try {
         document = await fs.readFile(documentPath);
@@ -75,11 +97,15 @@ module.exports = async function documents(request, response) {
         return response.status(500).json({ error: "Unable to read document" });
     }
 
-    response.setHeader("Content-Type", "application/pdf");
-    response.setHeader("Content-Length", document.length);
-    response.setHeader("Content-Disposition", `inline; filename="${path.basename(relativePath)}"`);
+    setDocumentHeaders(response, relativePath, document.length);
     if (request.method === "HEAD") {
         return response.status(200).end();
     }
     return response.status(200).send(document);
 };
+
+function setDocumentHeaders(response, relativePath, size) {
+    response.setHeader("Content-Type", "application/pdf");
+    response.setHeader("Content-Length", size);
+    response.setHeader("Content-Disposition", `inline; filename="${path.basename(relativePath)}"`);
+}
