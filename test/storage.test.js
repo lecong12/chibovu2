@@ -1,82 +1,123 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 const {
-    finalizePresignedUpload
+    UPLOAD_CHUNK_BYTES,
+    createNewDocumentPath,
+    getStorageConfiguration,
+    safePdfName,
+    saveUploadChunk
 } = require("../lib/storage");
 
-test("finalizing a signed PDF upload verifies it and copies it into the document path", async () => {
-    const sentCommands = [];
-    const client = {
-        async send(command) {
-            sentCommands.push(command);
-            switch (command.constructor.name) {
-                case "HeadObjectCommand":
-                    return {
-                        ContentType: "application/pdf",
-                        ContentLength: 5,
-                        Metadata: {
-                            "target-path": "uploads/tai-lieu-chung/test.pdf",
-                            "expected-size": "5"
-                        }
-                    };
-                case "GetObjectCommand":
-                    return { Body: { transformToByteArray: async () => Buffer.from("%PDF-") } };
-                default:
-                    return {};
-            }
-        }
+test("MongoDB configuration requires both the connection URI and database name", () => {
+    const previous = {
+        MONGODB_URI: process.env.MONGODB_URI,
+        MONGODB_DATABASE: process.env.MONGODB_DATABASE
     };
 
-    const result = await finalizePresignedUpload(
-        client,
-        "private-documents",
-        "pending/01234567-89ab-cdef-0123-456789abcdef.pdf",
-        "uploads/tai-lieu-chung/test.pdf"
-    );
+    try {
+        delete process.env.MONGODB_URI;
+        delete process.env.MONGODB_DATABASE;
+        assert.equal(getStorageConfiguration(), null);
 
-    assert.deepEqual(result, { valid: true });
-    assert.deepEqual(sentCommands.map((command) => command.constructor.name), [
-        "HeadObjectCommand",
-        "GetObjectCommand",
-        "CopyObjectCommand",
-        "DeleteObjectCommand"
-    ]);
-    assert.equal(sentCommands[2].input.Key, "uploads/tai-lieu-chung/test.pdf");
+        process.env.MONGODB_URI = "mongodb+srv://example.invalid/";
+        assert.equal(getStorageConfiguration(), null);
+
+        process.env.MONGODB_DATABASE = "chibovu2";
+        assert.deepEqual(getStorageConfiguration(), {
+            uri: "mongodb+srv://example.invalid/",
+            database: "chibovu2"
+        });
+    } finally {
+        for (const [key, value] of Object.entries(previous)) {
+            if (value === undefined) delete process.env[key];
+            else process.env[key] = value;
+        }
+    }
 });
 
-test("finalizing an upload rejects content that is not a PDF", async () => {
-    const sentCommands = [];
-    const client = {
-        async send(command) {
-            sentCommands.push(command);
-            if (command.constructor.name === "HeadObjectCommand") {
-                return {
-                    ContentType: "application/pdf",
-                    ContentLength: 4,
-                    Metadata: {
-                        "target-path": "uploads/tai-lieu-chung/test.pdf",
-                        "expected-size": "4"
-                    }
-                };
-            }
-            if (command.constructor.name === "GetObjectCommand") {
-                return { Body: { transformToByteArray: async () => Buffer.from("nope!") } };
-            }
-            return {};
+test("upload paths sanitize PDF names and enforce the supported categories", () => {
+    assert.equal(safePdfName("Báo cáo tháng 3.pdf"), "Bao-cao-thang-3.pdf");
+    assert.equal(safePdfName("../private.pdf"), "private.pdf");
+    assert.equal(safePdfName("notes.txt"), null);
+    assert.equal(createNewDocumentPath({
+        fileName: "Báo cáo tháng 3.pdf",
+        category: "bao-cao",
+        year: "2026"
+    }), "uploads/bao-cao/2026/Bao-cao-thang-3.pdf");
+    assert.equal(createNewDocumentPath({
+        fileName: "report.pdf",
+        category: "unknown"
+    }), null);
+});
+
+test("upload chunks require an active session and the exact expected chunk size", async () => {
+    const inserted = [];
+    const database = {
+        collection(name) {
+            assert.equal(name, "document_upload_sessions");
+            return {
+                async findOne() {
+                    return {
+                        expectedSize: UPLOAD_CHUNK_BYTES + 2,
+                        expiresAt: new Date(Date.now() + 60_000)
+                    };
+                }
+            };
+        }
+    };
+    const chunkDatabase = {
+        ...database,
+        collection(name) {
+            if (name === "document_upload_sessions") return database.collection(name);
+            assert.equal(name, "document_upload_chunks");
+            return {
+                async insertOne(chunk) {
+                    inserted.push(chunk);
+                }
+            };
         }
     };
 
-    const result = await finalizePresignedUpload(
-        client,
-        "private-documents",
-        "pending/01234567-89ab-cdef-0123-456789abcdef.pdf",
-        "uploads/tai-lieu-chung/test.pdf"
-    );
+    const first = await saveUploadChunk(chunkDatabase, {
+        uploadId: "test-upload",
+        index: 0,
+        data: Buffer.alloc(UPLOAD_CHUNK_BYTES, 0x41).toString("base64")
+    });
+    const incorrectFinalChunk = await saveUploadChunk(chunkDatabase, {
+        uploadId: "test-upload",
+        index: 1,
+        data: Buffer.alloc(3, 0x41).toString("base64")
+    });
 
-    assert.deepEqual(result, { valid: false });
-    assert.deepEqual(sentCommands.map((command) => command.constructor.name), [
-        "HeadObjectCommand",
-        "GetObjectCommand",
-        "DeleteObjectCommand"
-    ]);
+    assert.deepEqual(first, { status: "saved" });
+    assert.deepEqual(incorrectFinalChunk, { status: "invalid" });
+    assert.equal(inserted.length, 1);
+    assert.equal(inserted[0].data.length, UPLOAD_CHUNK_BYTES);
+});
+
+test("upload chunks reject duplicate part indexes", async () => {
+    const database = {
+        collection() {
+            return {
+                async findOne() {
+                    return {
+                        expectedSize: 1,
+                        expiresAt: new Date(Date.now() + 60_000)
+                    };
+                },
+                async insertOne() {
+                    const error = new Error("Duplicate key");
+                    error.code = 11000;
+                    throw error;
+                }
+            };
+        }
+    };
+
+    const result = await saveUploadChunk(database, {
+        uploadId: "test-upload",
+        index: 0,
+        data: Buffer.from("%").toString("base64")
+    });
+    assert.deepEqual(result, { status: "duplicate" });
 });

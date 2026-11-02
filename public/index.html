@@ -550,7 +550,7 @@
         async function loadUploadedDocuments() {
             const response = await fetch('/api/uploads');
             if (response.status === 503) {
-                setMessage(uploadStatus, 'Chưa cấu hình kho R2/S3 cho chức năng tải tài liệu.');
+                setMessage(uploadStatus, 'Chưa cấu hình MongoDB Atlas cho chức năng tải tài liệu.');
                 document.querySelector('.upload-submit').disabled = true;
                 return;
             }
@@ -610,7 +610,7 @@
 
             submit.disabled = true;
             setMessage(uploadStatus, 'Đang chuẩn bị tải lên…');
-            let pendingKey;
+            let uploadId;
             try {
                 const startResponse = await fetch('/api/uploads', {
                     method: 'POST',
@@ -629,32 +629,47 @@
                 });
                 const upload = await startResponse.json();
                 if (!startResponse.ok) throw new Error(upload.error || 'Không thể bắt đầu tải lên.');
-                pendingKey = upload.pendingKey;
+                uploadId = upload.uploadId;
 
-                setMessage(uploadStatus, 'Đang tải tệp lên kho lưu trữ…');
-                const putResponse = await fetch(upload.uploadUrl, {
-                    method: 'PUT',
-                    headers: upload.uploadHeaders,
-                    body: file
-                });
-                if (!putResponse.ok) {
-                    throw new Error('Kho lưu trữ từ chối tệp. Hãy kiểm tra cấu hình CORS của bucket.');
+                for (let index = 0; index < upload.chunkCount; index += 1) {
+                    const start = index * upload.chunkSize;
+                    const bytes = new Uint8Array(await file.slice(start, start + upload.chunkSize).arrayBuffer());
+                    let binary = '';
+                    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+                        binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+                    }
+                    const chunkResponse = await fetch('/api/uploads', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'chunk',
+                            uploadId,
+                            index,
+                            data: btoa(binary)
+                        })
+                    });
+                    const chunkResult = await chunkResponse.json();
+                    if (!chunkResponse.ok) {
+                        throw new Error(chunkResult.error || `Không tải được phần ${index + 1} của tệp.`);
+                    }
+                    const percent = Math.round(((index + 1) / upload.chunkCount) * 100);
+                    setMessage(uploadStatus, `Đang tải lên MongoDB… ${percent}%`);
                 }
 
-                setMessage(uploadStatus, 'Đang xác minh và cập nhật tài liệu…');
+                setMessage(uploadStatus, 'Đang xác minh và lưu tài liệu…');
                 const completeResponse = await fetch('/api/uploads', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         action: 'complete',
-                        pendingKey: upload.pendingKey,
+                        uploadId,
                         targetPath: upload.targetPath
                     })
                 });
                 const result = await completeResponse.json();
                 if (!completeResponse.ok) throw new Error(result.error || 'Không thể hoàn tất cập nhật.');
 
-                pendingKey = undefined;
+                uploadId = undefined;
                 form.reset();
                 updateUploadMode();
                 try {
@@ -666,19 +681,19 @@
                 }
             } catch (error) {
                 console.error('Lỗi tải tài liệu lên:', error);
-                if (pendingKey) {
+                if (uploadId) {
                     try {
                         await fetch('/api/uploads', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ action: 'cancel', pendingKey })
+                            body: JSON.stringify({ action: 'cancel', uploadId })
                         });
                     } catch (cleanupError) {
                         console.error('Không thể dọn tệp upload tạm:', cleanupError);
                     }
                 }
                 setMessage(uploadStatus, error instanceof TypeError
-                    ? 'Không kết nối được kho lưu trữ. Hãy kiểm tra CORS của bucket rồi thử lại.'
+                    ? 'Không kết nối được máy chủ MongoDB. Vui lòng kiểm tra cấu hình và thử lại.'
                     : error.message || 'Không thể tải tài liệu lên. Vui lòng thử lại.');
             } finally {
                 submit.disabled = false;

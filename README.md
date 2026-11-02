@@ -28,20 +28,16 @@ Nếu bản cũ từng được triển khai công khai, hãy thay thông tin đ
 
 ## Upload và cập nhật tài liệu
 
-Sau khi đăng nhập, mở **Cập nhật / tải tài liệu lên** để thêm PDF mới hoặc thay thế một tài liệu hiện có. Tệp được giới hạn tối đa 25 MB; tài liệu mới được đưa vào danh mục đã chọn. Bản thay thế và tệp mới được lưu trong bucket riêng tư và vẫn còn sau khi deploy. PDF hiện có trong `private-documents/` tiếp tục được dùng làm dữ liệu ban đầu; bản trong bucket sẽ được ưu tiên khi có cùng đường dẫn.
+Sau khi đăng nhập, mở **Cập nhật / tải tài liệu lên** để thêm PDF mới hoặc thay thế tài liệu hiện có. Tệp tối đa 25 MB được chia thành các phần nhỏ, gửi qua API đã xác thực và lưu trong MongoDB GridFS. Tài liệu upload vẫn tồn tại sau khi deploy. PDF có sẵn trong `private-documents/` vẫn được dùng như trước; bản lưu trong MongoDB được ưu tiên nếu có cùng đường dẫn.
 
-### Cấu hình Cloudflare R2
+### Cấu hình MongoDB Atlas
 
-Tạo bucket R2 riêng tư và API token giới hạn trong bucket đó, có quyền liệt kê bucket và đọc/ghi/xóa object. Thêm các biến sau trong **Vercel → Project → Settings → Environment Variables**:
+1. Tạo cluster trong [MongoDB Atlas](https://www.mongodb.com/atlas) và tạo database user có quyền `readWrite` trên database của website.
+2. Trong **Network Access**, cho phép kết nối từ Vercel. Nếu dự án không có static outbound IP, có thể cần cho phép `0.0.0.0/0`; khi đó hãy dùng mật khẩu mạnh, chỉ cấp quyền `readWrite` trên database này và không dùng database user cho mục đích khác.
+3. Lấy connection string dạng `mongodb+srv://...` từ **Connect → Drivers**. Thay thông tin user/password và tên database; encode ký tự đặc biệt trong user/password theo URL.
+4. Trong **Vercel → Project → Settings → Environment Variables**, thêm:
+   - `MONGODB_URI`: connection string Atlas (đánh dấu là Secret).
+   - `MONGODB_DATABASE`: tên database, ví dụ `chibovu2`.
+5. Redeploy project trên Vercel để các biến có hiệu lực.
 
-- `S3_ENDPOINT`: `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`
-- `S3_BUCKET`: tên bucket
-- `S3_REGION`: `auto`
-- `S3_ACCESS_KEY_ID`: Access Key ID của token R2
-- `S3_SECRET_ACCESS_KEY`: Secret Access Key của token R2
-
-Trong cấu hình CORS của bucket, chỉ cho phép origin của website (ví dụ `https://chibovu2.vercel.app`), phương thức `PUT`, và các request header `content-type`, `x-amz-meta-target-path`, `x-amz-meta-expected-size`. Khi phát triển cục bộ bằng `vercel dev`, thêm origin localhost tương ứng. Không bật truy cập công khai cho bucket. Có thể đặt lifecycle tự xóa object trong tiền tố `pending/` sau một ngày để dọn các lượt upload bị bỏ dở. Sau khi cấu hình, deploy lại ứng dụng.
-
-Với Amazon S3, đặt `S3_BUCKET`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` và để `S3_ENDPOINT` trống. Dùng quyền IAM giới hạn trong bucket này (`ListBucket`, `GetObject`, `PutObject`, `DeleteObject`); cấu hình CORS tương tự để website được phép `PUT`.
-
-Nếu chưa cấu hình kho lưu trữ, website vẫn đọc các PDF đã đóng gói như trước nhưng tính năng upload sẽ báo chưa được cấu hình. Liên kết upload có thời hạn ngắn; máy chủ xác minh chữ ký PDF trước khi đưa tệp vào danh sách tài liệu.
+Không đặt connection string trong mã nguồn và không gửi URI hoặc mật khẩu database qua chat. Ứng dụng tự tạo các collection GridFS (`fs.files`, `fs.chunks`) cùng collection tạm cho upload; các phần upload dở sẽ được tự dọn sau 24 giờ. Tệp được gửi theo từng phần 2 MB để phù hợp giới hạn request của Vercel. Nếu chưa cấu hình MongoDB, website vẫn đọc PDF đóng gói nhưng chức năng upload sẽ báo chưa được cấu hình.

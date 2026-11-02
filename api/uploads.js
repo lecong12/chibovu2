@@ -3,17 +3,19 @@ const { listLocalDocuments } = require("../lib/document-files");
 const {
     MAX_UPLOAD_BYTES,
     UPLOAD_CATEGORIES,
-    DeleteObjectCommand,
+    cancelUpload,
     createNewDocumentPath,
-    createPresignedUpload,
-    createStorageClient,
-    finalizePresignedUpload,
+    finalizeUpload,
     getStorageConfiguration,
+    getStorageDatabase,
     isDocumentPath,
-    listStoredDocuments
+    listStoredDocuments,
+    safePdfName,
+    saveUploadChunk,
+    startUpload
 } = require("../lib/storage");
 
-const PENDING_KEY_PATTERN = /^pending\/[a-f0-9-]{36}\.pdf$/;
+const UPLOAD_ID_PATTERN = /^[a-f0-9-]{36}$/;
 
 module.exports = async function uploads(request, response) {
     if (request.method !== "GET" && request.method !== "POST") {
@@ -42,11 +44,19 @@ module.exports = async function uploads(request, response) {
         return response.status(503).json({ error: "Persistent storage is not configured" });
     }
 
-    const client = createStorageClient(storageConfiguration);
+    let database;
+    try {
+        database = await getStorageDatabase(storageConfiguration);
+    } catch (error) {
+        console.error("Unable to connect to MongoDB for document uploads:", error);
+        return response.status(503).json({
+            error: "Cannot connect to MongoDB. Check the connection string, database name, and Atlas Network Access."
+        });
+    }
+
     try {
         if (request.method === "GET") {
-            const documents = await listStoredDocuments(client, storageConfiguration.bucket);
-            return response.status(200).json(documents);
+            return response.status(200).json(await listStoredDocuments(database));
         }
 
         const body = request.body;
@@ -55,32 +65,61 @@ module.exports = async function uploads(request, response) {
         }
 
         if (body.action === "start") {
-            return await startUpload(body, client, storageConfiguration.bucket, response);
+            return await startDocumentUpload(body, database, response);
+        }
+        if (body.action === "chunk") {
+            if (!UPLOAD_ID_PATTERN.test(body.uploadId || "")) {
+                return response.status(400).json({ error: "Invalid upload session" });
+            }
+            const result = await saveUploadChunk(database, body);
+            if (result.status === "missing") {
+                return response.status(404).json({ error: "Upload session expired" });
+            }
+            if (result.status === "duplicate") {
+                return response.status(409).json({ error: "This upload part was already received" });
+            }
+            if (result.status !== "saved") {
+                return response.status(400).json({ error: "Invalid upload part" });
+            }
+            return response.status(200).json({ uploaded: true });
         }
         if (body.action === "complete") {
-            return await completeUpload(body, client, storageConfiguration.bucket, response);
+            if (!UPLOAD_ID_PATTERN.test(body.uploadId || "") || !isDocumentPath(body.targetPath)) {
+                return response.status(400).json({ error: "Invalid upload confirmation" });
+            }
+            const result = await finalizeUpload(database, body);
+            if (result.status === "missing") {
+                return response.status(404).json({ error: "Upload session expired" });
+            }
+            if (result.status === "incomplete") {
+                return response.status(400).json({ error: "Some upload parts are missing" });
+            }
+            if (result.status === "invalid-pdf") {
+                return response.status(400).json({ error: "The uploaded file is not a valid PDF" });
+            }
+            return response.status(200).json({ path: result.path });
         }
         if (body.action === "cancel") {
-            if (typeof body.pendingKey !== "string" || !PENDING_KEY_PATTERN.test(body.pendingKey)) {
-                return response.status(400).json({ error: "Invalid upload cancellation" });
+            if (!UPLOAD_ID_PATTERN.test(body.uploadId || "")) {
+                return response.status(400).json({ error: "Invalid upload session" });
             }
-            await client.send(new DeleteObjectCommand({
-                Bucket: storageConfiguration.bucket,
-                Key: body.pendingKey
-            }));
+            await cancelUpload(database, body.uploadId);
             return response.status(200).json({ cancelled: true });
         }
 
         return response.status(400).json({ error: "Invalid upload action" });
     } catch (error) {
-        console.error("Unable to process document upload:", error);
+        console.error("Unable to process MongoDB document upload:", error);
         return response.status(500).json({ error: "Unable to process document upload" });
     }
 };
 
-async function startUpload(body, client, bucket, response) {
+async function startDocumentUpload(body, database, response) {
     if (!Number.isSafeInteger(body.size) || body.size < 1 || body.size > MAX_UPLOAD_BYTES) {
         return response.status(400).json({ error: "PDF files must be between 1 byte and 25 MB" });
+    }
+    if (!safePdfName(body.fileName)) {
+        return response.status(400).json({ error: "Only PDF files can be uploaded" });
     }
 
     let targetPath;
@@ -90,7 +129,7 @@ async function startUpload(body, client, bucket, response) {
         }
         const [localDocuments, storedDocuments] = await Promise.all([
             listLocalDocuments(),
-            listStoredDocuments(client, bucket)
+            listStoredDocuments(database)
         ]);
         if (!new Set([...localDocuments, ...storedDocuments.map((document) => document.path)])
             .has(body.replacePath)) {
@@ -109,7 +148,7 @@ async function startUpload(body, client, bucket, response) {
 
         const [localDocuments, storedDocuments] = await Promise.all([
             listLocalDocuments(),
-            listStoredDocuments(client, bucket)
+            listStoredDocuments(database)
         ]);
         const existing = new Set([...localDocuments, ...storedDocuments.map((document) => document.path)]);
         const pathParts = targetPath.split("/");
@@ -118,8 +157,7 @@ async function startUpload(body, client, bucket, response) {
         let candidate = targetPath;
         let suffix = 2;
         while (existing.has(candidate)) {
-            const extension = ".pdf";
-            candidate = `${directory}/${fileName.slice(0, -extension.length)}-${suffix}${extension}`;
+            candidate = `${directory}/${fileName.slice(0, -4)}-${suffix}.pdf`;
             suffix += 1;
         }
         targetPath = candidate;
@@ -127,44 +165,10 @@ async function startUpload(body, client, bucket, response) {
         return response.status(400).json({ error: "Invalid upload mode" });
     }
 
-    const signedUpload = await createPresignedUpload(client, bucket, targetPath, body.size);
-    return response.status(200).json({ ...signedUpload, targetPath });
-}
-
-async function completeUpload(body, client, bucket, response) {
-    if (typeof body.pendingKey !== "string" || !PENDING_KEY_PATTERN.test(body.pendingKey)
-        || !isDocumentPath(body.targetPath)) {
-        return response.status(400).json({ error: "Invalid upload confirmation" });
-    }
-
-    const isManagedUpload = isManagedUploadPath(body.targetPath);
-    if (!isManagedUpload) {
-        const [localDocuments, storedDocuments] = await Promise.all([
-            listLocalDocuments(),
-            listStoredDocuments(client, bucket)
-        ]);
-        const existing = new Set([...localDocuments, ...storedDocuments.map((document) => document.path)]);
-        if (!existing.has(body.targetPath)) {
-            return response.status(400).json({ error: "Invalid replacement document" });
-        }
-    }
-
-    const result = await finalizePresignedUpload(client, bucket, body.pendingKey, body.targetPath);
-    if (!result.valid) {
-        return response.status(400).json({ error: "The uploaded file is not a valid PDF" });
-    }
-
-    return response.status(200).json({ path: body.targetPath });
-}
-
-function isManagedUploadPath(documentPath) {
-    const segments = documentPath.split("/");
-    if (segments[0] !== "uploads" || !UPLOAD_CATEGORIES.has(segments[1])) {
-        return false;
-    }
-
-    if (segments[1] === "bao-cao") {
-        return segments.length === 4 && /^(?:19|20|21)\d{2}$/.test(segments[2]);
-    }
-    return segments.length === 3;
+    const upload = await startUpload(database, {
+        targetPath,
+        size: body.size,
+        fileName: safePdfName(body.fileName)
+    });
+    return response.status(200).json({ ...upload, targetPath });
 }

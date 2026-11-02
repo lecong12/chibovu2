@@ -37,16 +37,13 @@ function withAuthEnvironment(callback) {
         AUTH_USERNAME: process.env.AUTH_USERNAME,
         AUTH_PASSWORD: process.env.AUTH_PASSWORD,
         SESSION_SECRET: process.env.SESSION_SECRET,
-        S3_BUCKET: process.env.S3_BUCKET,
-        S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
-        S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
-        S3_ENDPOINT: process.env.S3_ENDPOINT,
-        S3_REGION: process.env.S3_REGION
+        MONGODB_URI: process.env.MONGODB_URI,
+        MONGODB_DATABASE: process.env.MONGODB_DATABASE
     };
     process.env.AUTH_USERNAME = "test-user";
     process.env.AUTH_PASSWORD = "test-password";
     process.env.SESSION_SECRET = "test-session-secret-that-is-at-least-32-bytes";
-    for (const key of ["S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY", "S3_ENDPOINT", "S3_REGION"]) {
+    for (const key of ["MONGODB_URI", "MONGODB_DATABASE"]) {
         delete process.env[key];
     }
 

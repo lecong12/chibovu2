@@ -3,10 +3,9 @@ const path = require("node:path");
 const { getAuthConfiguration, isAuthenticated } = require("../lib/auth");
 const { DOCUMENT_ROOT, listLocalDocuments } = require("../lib/document-files");
 const {
-    GetObjectCommand,
-    HeadObjectCommand,
-    createStorageClient,
     getStorageConfiguration,
+    getStorageDatabase,
+    getStoredDocument,
     listStoredDocuments
 } = require("../lib/storage");
 
@@ -36,8 +35,8 @@ module.exports = async function documents(request, response) {
             const availableDocuments = await listLocalDocuments();
             const storageConfiguration = getStorageConfiguration();
             if (storageConfiguration) {
-                const client = createStorageClient(storageConfiguration);
-                const storedDocuments = await listStoredDocuments(client, storageConfiguration.bucket);
+                const database = await getStorageDatabase(storageConfiguration);
+                const storedDocuments = await listStoredDocuments(database);
                 availableDocuments.push(...storedDocuments.map((document) => document.path));
             }
             return response.status(200).json([...new Set(availableDocuments)].sort());
@@ -60,29 +59,18 @@ module.exports = async function documents(request, response) {
     const storageConfiguration = getStorageConfiguration();
     if (storageConfiguration) {
         try {
-            const client = createStorageClient(storageConfiguration);
-            if (request.method === "HEAD") {
-                const metadata = await client.send(new HeadObjectCommand({
-                    Bucket: storageConfiguration.bucket,
-                    Key: relativePath
-                }));
-                setDocumentHeaders(response, relativePath, metadata.ContentLength);
-                return response.status(200).end();
+            const database = await getStorageDatabase(storageConfiguration);
+            const storedDocument = await getStoredDocument(database, relativePath);
+            if (storedDocument) {
+                setDocumentHeaders(response, relativePath, storedDocument.size);
+                if (request.method === "HEAD") {
+                    return response.status(200).end();
+                }
+                return response.status(200).send(storedDocument.body);
             }
-
-            const storedDocument = await client.send(new GetObjectCommand({
-                Bucket: storageConfiguration.bucket,
-                Key: relativePath
-            }));
-            const document = Buffer.from(await storedDocument.Body.transformToByteArray());
-            setDocumentHeaders(response, relativePath, document.length);
-            return response.status(200).send(document);
         } catch (error) {
-            if (error.name !== "NoSuchKey" && error.name !== "NotFound"
-                && error.$metadata?.httpStatusCode !== 404) {
-                console.error("Unable to read document from object storage:", error);
-                return response.status(500).json({ error: "Unable to read document" });
-            }
+            console.error("Unable to read document from MongoDB:", error);
+            return response.status(500).json({ error: "Unable to read document" });
         }
     }
 
