@@ -475,8 +475,10 @@
 
         function openDocumentsInNewTab() {
             document.querySelectorAll('a[href^="assets/file/"]').forEach((link) => {
+                link.dataset.documentPath = link.getAttribute('href').slice('assets/file/'.length);
                 link.target = '_blank';
                 link.rel = 'noopener';
+                link.href = `document.html?path=${encodeURIComponent(link.dataset.documentPath)}`;
             });
         }
 
@@ -501,7 +503,9 @@
                     link.title = 'Tài liệu chưa được cập nhật';
                     link.textContent = `${link.dataset.originalLabel} — Chưa cập nhật`;
                 } else {
-                    link.href = `assets/file/${documentPath}`;
+                    link.href = `document.html?path=${encodeURIComponent(documentPath)}`;
+                    link.target = '_blank';
+                    link.rel = 'noopener';
                     link.removeAttribute('aria-disabled');
                     link.classList.remove('unavailable');
                     link.removeAttribute('title');
@@ -575,7 +579,7 @@
                 for (const path of group.paths.sort()) {
                     const link = document.createElement('a');
                     link.className = 'sub-link';
-                    link.href = `assets/file/${path}`;
+                    link.href = `document.html?path=${encodeURIComponent(path)}`;
                     link.target = '_blank';
                     link.rel = 'noopener';
                     link.dataset.documentPath = path;

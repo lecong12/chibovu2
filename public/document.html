@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Xem tài liệu - Chi bộ Vụ Địa phương 2</title>
+    <style>
+        * { box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; margin: 0; }
+        body {
+            display: flex;
+            flex-direction: column;
+            color: #17314d;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #eaf1f8;
+        }
+        .toolbar {
+            display: flex;
+            min-height: 60px;
+            align-items: center;
+            gap: 14px;
+            padding: 8px 16px;
+            background: #0d47a1;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,.2);
+        }
+        .toolbar a {
+            display: inline-flex;
+            min-height: 42px;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: #ffc107;
+            color: #17314d;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .toolbar a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+        #document-title {
+            overflow: hidden;
+            font-size: 1rem;
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        #pdf-viewer { flex: 1; width: 100%; min-height: 0; border: 0; }
+        #viewer-error {
+            display: none;
+            margin: auto;
+            padding: 24px;
+            text-align: center;
+        }
+        #open-pdf { display: none; }
+        @media (max-width: 480px) {
+            .toolbar { min-height: 56px; gap: 10px; padding: 7px 10px; }
+            .toolbar a { min-height: 40px; padding: 7px 10px; font-size: .9rem; }
+            #document-title { font-size: .9rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="toolbar">
+        <a href="./" aria-label="Quay về trang chủ">← Về trang chủ</a>
+        <div id="document-title">Đang mở tài liệu…</div>
+        <a id="open-pdf" target="_blank" rel="noopener">Mở PDF riêng</a>
+    </header>
+    <iframe id="pdf-viewer" title="Nội dung tài liệu PDF"></iframe>
+    <main id="viewer-error" role="alert">
+        <p>Đường dẫn tài liệu không hợp lệ hoặc tài liệu chưa được cập nhật.</p>
+        <a href="./">Quay về trang chủ</a>
+    </main>
+    <script>
+        const documentPath = new URLSearchParams(window.location.search).get('path');
+        const validPath = typeof documentPath === 'string'
+            && /^(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+\.pdf$/i.test(documentPath);
+
+        if (validPath) {
+            const pdfUrl = `assets/file/${documentPath.split('/').map(encodeURIComponent).join('/')}`;
+            document.title = `${documentPath.split('/').pop()} - Chi bộ Vụ Địa phương 2`;
+            document.getElementById('document-title').textContent =
+                documentPath.split('/').pop().replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+            document.getElementById('pdf-viewer').src = pdfUrl;
+            const openPdf = document.getElementById('open-pdf');
+            openPdf.href = pdfUrl;
+            openPdf.style.display = 'inline-flex';
+        } else {
+            document.getElementById('pdf-viewer').remove();
+            document.getElementById('document-title').textContent = 'Không mở được tài liệu';
+            document.getElementById('viewer-error').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
